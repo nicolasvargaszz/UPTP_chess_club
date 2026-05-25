@@ -3,100 +3,183 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>UPTP Chess Club - Torneo Suizo</title>
+  <title>UPTP Chess Club · Swiss Manager</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
       color-scheme: light;
+      --ink: #172033;
+      --navy: #10384f;
+      --ember: #d64032;
+      --gold: #c9a24a;
+      --felt: #2f7d62;
     }
 
     body {
+      min-height: 100vh;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 8% 0%, rgba(214, 64, 50, 0.12), transparent 28rem),
+        radial-gradient(circle at 94% 12%, rgba(47, 125, 98, 0.14), transparent 30rem),
+        linear-gradient(180deg, #f7f3ea 0%, #f4f6f8 44%, #eef2f3 100%);
+      color: var(--ink);
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.78);
+      box-shadow: 0 18px 45px rgba(23, 32, 51, 0.08);
+      backdrop-filter: blur(18px);
+    }
+
+    .surface {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(23, 32, 51, 0.09);
+      box-shadow: 0 12px 35px rgba(23, 32, 51, 0.07);
     }
 
     .tab-active {
-      background: #111827;
-      color: #ffffff;
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
     }
 
     .tab-inactive {
-      background: #ffffff;
-      color: #3f3f46;
-      border-color: #d4d4d8;
+      background: rgba(255, 255, 255, 0.78);
+      color: #445066;
+      border-color: rgba(23, 32, 51, 0.12);
     }
 
-    .brand-mark svg {
-      display: block;
-      height: 46px;
-      width: 46px;
+    .board-pattern {
+      background-image:
+        linear-gradient(45deg, rgba(16, 56, 79, 0.08) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(16, 56, 79, 0.08) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(16, 56, 79, 0.08) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(16, 56, 79, 0.08) 75%);
+      background-size: 24px 24px;
+      background-position: 0 0, 0 12px, 12px -12px, -12px 0;
     }
 
     .scroll-shadow {
       background:
-        linear-gradient(90deg, #fafafa 30%, rgba(250, 250, 250, 0)),
-        linear-gradient(90deg, rgba(250, 250, 250, 0), #fafafa 70%) 100% 0,
-        linear-gradient(90deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0)),
-        linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.08)) 100% 0;
+        linear-gradient(90deg, #fff 30%, rgba(255, 255, 255, 0)),
+        linear-gradient(90deg, rgba(255, 255, 255, 0), #fff 70%) 100% 0,
+        linear-gradient(90deg, rgba(23, 32, 51, 0.10), rgba(23, 32, 51, 0)),
+        linear-gradient(90deg, rgba(23, 32, 51, 0), rgba(23, 32, 51, 0.10)) 100% 0;
+      background-attachment: local, local, scroll, scroll;
       background-repeat: no-repeat;
       background-size: 24px 100%, 24px 100%, 12px 100%, 12px 100%;
-      background-attachment: local, local, scroll, scroll;
     }
 
-    @media (max-width: 520px) {
-      .mobile-tight {
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
+    .admin-only[disabled],
+    .admin-only[aria-disabled="true"] {
+      opacity: 0.52;
+      pointer-events: none;
+    }
+
+    @media (max-width: 560px) {
+      .mobile-pad {
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
       }
     }
   </style>
 </head>
-<body class="bg-zinc-100 text-zinc-950">
+<body>
   <div class="min-h-screen">
-    <header class="border-b border-zinc-200 bg-white">
-      <div class="mx-auto flex max-w-6xl items-center gap-3 px-4 py-4 mobile-tight">
-        <div class="brand-mark shrink-0" aria-hidden="true">
-          <svg viewBox="0 0 64 64" role="img">
-            <path d="M23 56h18l-2-10h-14l-2 10Z" fill="#14516d"/>
-            <path d="M24 46h16l-3-18h-10l-3 18Z" fill="#14516d"/>
-            <path d="M22 28h20v-8h-5v4h-4v-4h-4v4h-4v-4h-3v8Z" fill="#14516d"/>
-            <path d="M32 4c8 10-1 13 8 23-10-2-16-8-8-23Z" fill="#d64032"/>
-            <path d="M25 11c-6 9-5 16 4 20-2-7 5-9-4-20Z" fill="#f06f43"/>
-            <path d="M41 10c7 8 6 16-2 21 1-8-7-10 2-21Z" fill="#c5232c"/>
-          </svg>
-        </div>
-        <div class="min-w-0">
-          <h1 class="truncate text-xl font-bold tracking-normal sm:text-2xl">UPTP Chess Club</h1>
-          <p class="text-sm text-zinc-600">Torneo suizo 5+0 · 3 tableros · izquierda blancas, derecha negras</p>
+    <header class="mx-auto max-w-7xl px-4 pb-4 pt-4 mobile-pad sm:pt-6">
+      <div class="glass overflow-hidden rounded-2xl">
+        <div class="grid gap-0 lg:grid-cols-[1fr_360px]">
+          <section class="relative overflow-hidden p-5 sm:p-7">
+            <div class="absolute inset-y-0 right-0 hidden w-80 board-pattern opacity-60 lg:block"></div>
+            <div class="relative z-10 flex flex-col gap-5">
+              <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex min-w-0 items-center gap-4">
+                  <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm">
+                    <img class="h-12 w-12 rounded-xl object-contain" src="images.jpeg" alt="Logo UPTP">
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-red-700">UPTP Chess Club</p>
+                    <h1 class="mt-1 text-2xl font-black tracking-normal text-slate-950 sm:text-4xl">Swiss Manager</h1>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button id="adminButton" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-900 shadow-sm">Admin</button>
+                  <button id="printButton" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-900 shadow-sm">Imprimir</button>
+                </div>
+              </div>
+
+              <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" id="summary"></div>
+            </div>
+          </section>
+
+          <aside class="border-t border-white/70 bg-slate-950 p-5 text-white lg:border-l lg:border-t-0">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-xs font-bold uppercase tracking-[0.18em] text-amber-300">Ronda activa</p>
+                <p id="heroRound" class="mt-1 text-4xl font-black">-</p>
+              </div>
+              <div id="adminBadge" class="rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-white">Bloqueado</div>
+            </div>
+            <div class="mt-5 overflow-hidden rounded-2xl border border-white/10 bg-white p-3">
+              <img class="h-24 w-full object-contain" src="uptp.jpg" alt="Universidad Politécnica Taiwan Paraguay">
+            </div>
+            <div class="mt-5 rounded-2xl border border-white/10 bg-white/10 p-4">
+              <p class="text-sm font-semibold text-slate-200">Siguiente tanda</p>
+              <div id="nextBatchPreview" class="mt-3 space-y-2"></div>
+            </div>
+          </aside>
         </div>
       </div>
     </header>
 
-    <main class="mx-auto max-w-6xl px-4 py-5 mobile-tight">
-      <section class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" id="summary"></section>
-
-      <nav class="mt-5 flex flex-wrap gap-2" aria-label="Vistas">
-        <button class="tab-btn rounded-lg border px-3 py-2 text-sm font-semibold" data-view="standings">Posiciones</button>
-        <button class="tab-btn rounded-lg border px-3 py-2 text-sm font-semibold" data-view="pairings">Próximas partidas</button>
-        <button class="tab-btn rounded-lg border px-3 py-2 text-sm font-semibold" data-view="history">Historial</button>
-        <button class="tab-btn rounded-lg border px-3 py-2 text-sm font-semibold" data-view="players">Jugadores</button>
+    <main class="mx-auto max-w-7xl px-4 pb-10 mobile-pad">
+      <nav class="flex flex-wrap gap-2" aria-label="Vistas">
+        <button class="tab-btn rounded-xl border px-4 py-2 text-sm font-bold" data-view="dashboard">Panel</button>
+        <button class="tab-btn rounded-xl border px-4 py-2 text-sm font-bold" data-view="pairings">Partidas</button>
+        <button class="tab-btn rounded-xl border px-4 py-2 text-sm font-bold" data-view="standings">Posiciones</button>
+        <button class="tab-btn rounded-xl border px-4 py-2 text-sm font-bold" data-view="history">Historial</button>
+        <button class="tab-btn rounded-xl border px-4 py-2 text-sm font-bold" data-view="players">Jugadores</button>
+        <button class="tab-btn rounded-xl border px-4 py-2 text-sm font-bold admin-nav" data-view="database">Base local</button>
       </nav>
 
       <section id="alerts" class="mt-4 space-y-2"></section>
 
-      <section id="view-standings" class="view mt-4"></section>
+      <section id="view-dashboard" class="view mt-4"></section>
       <section id="view-pairings" class="view mt-4 hidden"></section>
+      <section id="view-standings" class="view mt-4 hidden"></section>
       <section id="view-history" class="view mt-4 hidden"></section>
       <section id="view-players" class="view mt-4 hidden"></section>
+      <section id="view-database" class="view mt-4 hidden"></section>
     </main>
   </div>
 
-  <template id="emptyStateTemplate">
-    <div class="rounded-lg border border-dashed border-zinc-300 bg-white p-5 text-sm text-zinc-600"></div>
-  </template>
+  <div id="adminModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 p-4">
+    <div class="surface w-full max-w-md rounded-2xl p-5">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-black">Administrador</h2>
+          <p id="adminModalHint" class="mt-1 text-sm text-slate-600"></p>
+        </div>
+        <button id="closeAdminModal" class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-bold">Cerrar</button>
+      </div>
+      <form id="adminForm" class="mt-5 space-y-3">
+        <label class="block text-sm">
+          <span class="mb-1 block font-bold text-slate-700">Clave local</span>
+          <input id="adminKeyInput" name="key" type="password" autocomplete="current-password" class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3">
+        </label>
+        <button id="adminSubmit" class="w-full rounded-xl bg-slate-950 px-4 py-3 text-sm font-black text-white">Validar</button>
+      </form>
+      <button id="adminLockButton" class="mt-3 hidden w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-black text-slate-800">Bloquear administrador</button>
+    </div>
+  </div>
 
   <script>
-    const STORAGE_KEY = "uptpSwissTournamentState.v1";
-    const BOARDS_PER_BATCH = 3;
+    const DB_NAME = "uptp_chess_club_database";
+    const DB_VERSION = 1;
+    const STORE_NAME = "records";
+    const LEGACY_STORAGE_KEY = "uptpSwissTournamentState.v1";
+    const LOGO_SOURCE = "Logos institucionales locales";
 
     const OFFICIAL_PLAYERS = [
       "Camila Rivas",
@@ -117,7 +200,7 @@
       "Nico Segovia"
     ];
 
-    const INITIAL_RESULTS = [
+    const INITIAL_MATCHES = [
       {
         id: "m-inicial-1",
         round: 1,
@@ -126,7 +209,8 @@
         whiteId: "p8",
         blackId: "p14",
         result: "0-1",
-        createdAt: "2026-05-25T00:00:01.000Z"
+        createdAt: "2026-05-25T00:00:01.000Z",
+        source: "initial"
       },
       {
         id: "m-inicial-2",
@@ -136,7 +220,8 @@
         whiteId: "p2",
         blackId: "p11",
         result: "1-0",
-        createdAt: "2026-05-25T00:00:02.000Z"
+        createdAt: "2026-05-25T00:00:02.000Z",
+        source: "initial"
       },
       {
         id: "m-inicial-3",
@@ -146,41 +231,175 @@
         whiteId: "p3",
         blackId: "p16",
         result: "0-1",
-        createdAt: "2026-05-25T00:00:03.000Z"
+        createdAt: "2026-05-25T00:00:03.000Z",
+        source: "initial"
       }
     ];
 
-    let state = loadState();
-    let currentView = "standings";
+    const DEFAULT_SETTINGS = {
+      tournamentName: "Recreos UPTP 5+0",
+      totalRounds: 5,
+      boardsPerBatch: 3,
+      autoPairing: true,
+      adminHash: "",
+      logoSource: LOGO_SOURCE
+    };
+
+    let database = null;
+    let dbAvailable = false;
+    let state = createInitialState();
+    let settings = { ...DEFAULT_SETTINGS };
+    let currentView = "dashboard";
+    let adminUnlocked = sessionStorage.getItem("uptpAdminUnlocked") === "true";
 
     function createInitialState() {
       return {
-        version: 1,
+        version: 2,
         players: OFFICIAL_PLAYERS.map((name, index) => ({
           id: `p${index + 1}`,
           name,
+          seed: index + 1,
           active: true
         })),
-        matches: structuredClone(INITIAL_RESULTS)
+        matches: clone(INITIAL_MATCHES),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
     }
 
-    function loadState() {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (!saved) return createInitialState();
-        const parsed = JSON.parse(saved);
-        if (!parsed || !Array.isArray(parsed.players) || !Array.isArray(parsed.matches)) {
-          return createInitialState();
+    function clone(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function openDatabase() {
+      return new Promise(resolve => {
+        if (!("indexedDB" in window)) {
+          resolve(null);
+          return;
         }
-        return parsed;
+
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onupgradeneeded = event => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: "key" });
+          }
+        };
+        request.onsuccess = event => resolve(event.target.result);
+        request.onerror = () => resolve(null);
+      });
+    }
+
+    function dbGet(key) {
+      return new Promise(resolve => {
+        if (!database) {
+          const raw = localStorage.getItem(`fallback.${key}`);
+          resolve(raw ? JSON.parse(raw) : null);
+          return;
+        }
+
+        const tx = database.transaction(STORE_NAME, "readonly");
+        const request = tx.objectStore(STORE_NAME).get(key);
+        request.onsuccess = () => resolve(request.result ? request.result.value : null);
+        request.onerror = () => resolve(null);
+      });
+    }
+
+    function dbSet(key, value) {
+      return new Promise(resolve => {
+        if (!database) {
+          localStorage.setItem(`fallback.${key}`, JSON.stringify(value));
+          resolve();
+          return;
+        }
+
+        const tx = database.transaction(STORE_NAME, "readwrite");
+        tx.objectStore(STORE_NAME).put({ key, value });
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => resolve();
+      });
+    }
+
+    async function loadData() {
+      database = await openDatabase();
+      dbAvailable = Boolean(database);
+
+      const savedState = await dbGet("tournament");
+      const savedSettings = await dbGet("settings");
+
+      if (savedState) {
+        state = normalizeState(savedState);
+      } else {
+        const legacy = readLegacyState();
+        state = legacy ? normalizeState(legacy) : createInitialState();
+        await saveState();
+      }
+
+      settings = { ...DEFAULT_SETTINGS, ...(savedSettings || {}) };
+      await saveSettings();
+    }
+
+    function readLegacyState() {
+      try {
+        const raw = localStorage.getItem(LEGACY_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
       } catch {
-        return createInitialState();
+        return null;
       }
     }
 
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    function normalizeState(input) {
+      const normalized = {
+        ...createInitialState(),
+        ...input,
+        players: Array.isArray(input.players) ? input.players : [],
+        matches: Array.isArray(input.matches) ? input.matches : []
+      };
+
+      normalized.players = normalized.players.map((player, index) => ({
+        id: player.id || `p-${Date.now()}-${index}`,
+        name: player.name || "Jugador sin nombre",
+        seed: Number.isFinite(Number(player.seed)) ? Number(player.seed) : index + 1,
+        active: player.active !== false
+      }));
+
+      normalized.matches = normalized.matches.map((match, index) => ({
+        id: match.id || `m-${Date.now()}-${index}`,
+        round: positiveNumber(match.round, 1),
+        batch: positiveNumber(match.batch, 1),
+        board: positiveNumber(match.board, 1),
+        whiteId: match.whiteId,
+        blackId: match.blackId,
+        result: match.result || "",
+        createdAt: match.createdAt || new Date().toISOString(),
+        source: match.source || "manual"
+      })).filter(match => match.whiteId && match.blackId);
+
+      return normalized;
+    }
+
+    async function saveState() {
+      state.updatedAt = new Date().toISOString();
+      await dbSet("tournament", state);
+    }
+
+    async function saveSettings() {
+      await dbSet("settings", settings);
+    }
+
+    async function hashText(text) {
+      const value = String(text);
+      if (window.crypto && window.crypto.subtle) {
+        const data = new TextEncoder().encode(value);
+        const digest = await crypto.subtle.digest("SHA-256", data);
+        return [...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, "0")).join("");
+      }
+
+      let hash = 0;
+      for (let index = 0; index < value.length; index += 1) {
+        hash = ((hash << 5) - hash + value.charCodeAt(index)) | 0;
+      }
+      return `fallback-${hash}`;
     }
 
     function getPlayer(id) {
@@ -191,8 +410,8 @@
       return getPlayer(id)?.name || "Jugador eliminado";
     }
 
-    function completedMatches() {
-      return state.matches.filter(match => match.result);
+    function activePlayers() {
+      return state.players.filter(player => player.active);
     }
 
     function sortedMatches(matches = state.matches) {
@@ -202,6 +421,22 @@
         a.board - b.board ||
         String(a.createdAt).localeCompare(String(b.createdAt))
       );
+    }
+
+    function completedMatches() {
+      return sortedMatches(state.matches.filter(match => match.result));
+    }
+
+    function pendingMatches() {
+      return sortedMatches(state.matches.filter(match => !match.result));
+    }
+
+    function matchesForRound(round) {
+      return sortedMatches(state.matches.filter(match => match.round === round));
+    }
+
+    function maxRound() {
+      return state.matches.reduce((max, match) => Math.max(max, match.round || 1), 1);
     }
 
     function scoreFromResult(match, playerId) {
@@ -214,18 +449,21 @@
 
     function calculateStats() {
       const stats = new Map();
-
       state.players.forEach(player => {
         stats.set(player.id, {
           player,
           points: 0,
-          buchholz: 0,
+          wins: 0,
+          draws: 0,
+          losses: 0,
           played: 0,
-          colors: [],
-          rivals: [],
-          rivalIds: new Set(),
+          scheduled: 0,
           whiteCount: 0,
-          blackCount: 0
+          blackCount: 0,
+          colorHistory: [],
+          completedOpponentIds: [],
+          allOpponentIds: new Set(),
+          buchholz: 0
         });
       });
 
@@ -234,27 +472,41 @@
         const black = stats.get(match.blackId);
         if (!white || !black) continue;
 
-        // El historial de colores cuenta partidas programadas y terminadas.
-        white.colors.push("B");
-        black.colors.push("N");
+        white.scheduled += 1;
+        black.scheduled += 1;
         white.whiteCount += 1;
         black.blackCount += 1;
-        white.rivalIds.add(match.blackId);
-        black.rivalIds.add(match.whiteId);
+        white.colorHistory.push("B");
+        black.colorHistory.push("N");
+        white.allOpponentIds.add(match.blackId);
+        black.allOpponentIds.add(match.whiteId);
 
-        if (match.result) {
-          white.points += scoreFromResult(match, match.whiteId);
-          black.points += scoreFromResult(match, match.blackId);
-          white.played += 1;
-          black.played += 1;
-          white.rivals.push(match.blackId);
-          black.rivals.push(match.whiteId);
+        if (!match.result) continue;
+
+        const whiteScore = scoreFromResult(match, match.whiteId);
+        const blackScore = scoreFromResult(match, match.blackId);
+        white.points += whiteScore;
+        black.points += blackScore;
+        white.played += 1;
+        black.played += 1;
+        white.completedOpponentIds.push(match.blackId);
+        black.completedOpponentIds.push(match.whiteId);
+
+        if (whiteScore === 1) {
+          white.wins += 1;
+          black.losses += 1;
+        } else if (blackScore === 1) {
+          black.wins += 1;
+          white.losses += 1;
+        } else {
+          white.draws += 1;
+          black.draws += 1;
         }
       }
 
       for (const item of stats.values()) {
-        item.buchholz = item.rivals.reduce((sum, rivalId) => {
-          return sum + (stats.get(rivalId)?.points || 0);
+        item.buchholz = item.completedOpponentIds.reduce((sum, opponentId) => {
+          return sum + (stats.get(opponentId)?.points || 0);
         }, 0);
       }
 
@@ -264,81 +516,72 @@
     function standings() {
       return [...calculateStats().values()].sort((a, b) =>
         b.points - a.points ||
+        b.wins - a.wins ||
         b.buchholz - a.buchholz ||
-        b.played - a.played ||
+        a.player.seed - b.player.seed ||
         a.player.name.localeCompare(b.player.name, "es")
       );
     }
 
-    function activePlayers() {
-      return state.players.filter(player => player.active);
-    }
-
-    function pendingMatches() {
-      return sortedMatches(state.matches.filter(match => !match.result));
-    }
-
-    function hasPlayedEachOther(idA, idB) {
+    function hasPlayedOrScheduled(idA, idB) {
       return state.matches.some(match =>
         (match.whiteId === idA && match.blackId === idB) ||
         (match.whiteId === idB && match.blackId === idA)
       );
     }
 
-    function lastColors(stat, amount) {
-      return stat.colors.slice(-amount);
+    function lastColors(stat, count) {
+      return stat.colorHistory.slice(-count);
     }
 
     function colorPenalty(stat, color) {
       const whiteAfter = stat.whiteCount + (color === "B" ? 1 : 0);
       const blackAfter = stat.blackCount + (color === "N" ? 1 : 0);
-      const balancePenalty = Math.abs(whiteAfter - blackAfter);
+      const balance = Math.abs(whiteAfter - blackAfter);
       const last = lastColors(stat, 1)[0];
       const lastTwo = lastColors(stat, 2);
-      let streakPenalty = 0;
+      let streak = 0;
 
-      if (last === color) streakPenalty += 3;
-      if (lastTwo.length === 2 && lastTwo.every(item => item === color)) streakPenalty += 12;
+      if (last === color) streak += 6;
+      if (lastTwo.length === 2 && lastTwo.every(item => item === color)) streak += 30;
 
-      return balancePenalty + streakPenalty;
+      return balance + streak;
     }
 
-    function orientPair(idA, idB, stats) {
+    function orientedPair(idA, idB, stats) {
       const a = stats.get(idA);
       const b = stats.get(idB);
-      const aWhiteCost = colorPenalty(a, "B") + colorPenalty(b, "N");
-      const bWhiteCost = colorPenalty(a, "N") + colorPenalty(b, "B");
+      const aWhite = colorPenalty(a, "B") + colorPenalty(b, "N");
+      const bWhite = colorPenalty(a, "N") + colorPenalty(b, "B");
 
-      if (aWhiteCost < bWhiteCost) {
-        return { whiteId: idA, blackId: idB, colorCost: aWhiteCost };
-      }
-      if (bWhiteCost < aWhiteCost) {
-        return { whiteId: idB, blackId: idA, colorCost: bWhiteCost };
-      }
+      if (aWhite < bWhite) return { whiteId: idA, blackId: idB, colorCost: aWhite };
+      if (bWhite < aWhite) return { whiteId: idB, blackId: idA, colorCost: bWhite };
 
-      // Empate estable: alterna de forma predecible por nombre.
-      return playerName(idA).localeCompare(playerName(idB), "es") <= 0
-        ? { whiteId: idA, blackId: idB, colorCost: aWhiteCost }
-        : { whiteId: idB, blackId: idA, colorCost: bWhiteCost };
+      return a.player.seed <= b.player.seed
+        ? { whiteId: idA, blackId: idB, colorCost: aWhite }
+        : { whiteId: idB, blackId: idA, colorCost: bWhite };
     }
 
-    function pairCost(idA, idB, stats) {
+    function pairingCost(idA, idB, stats, orderedIds) {
       const a = stats.get(idA);
       const b = stats.get(idB);
-      const repeatedPenalty = hasPlayedEachOther(idA, idB) ? 1_000_000 : 0;
-      const scorePenalty = Math.abs(a.points - b.points) * 10_000;
-      const colorCost = orientPair(idA, idB, stats).colorCost * 100;
-      const playedPenalty = Math.abs(a.played - b.played) * 10;
-      return repeatedPenalty + scorePenalty + colorCost + playedPenalty;
+      const repeated = hasPlayedOrScheduled(idA, idB) ? 1_000_000_000 : 0;
+      const scoreDistance = Math.abs(a.points - b.points) * 1_000_000;
+      const indexDistance = Math.abs(orderedIds.indexOf(idA) - orderedIds.indexOf(idB));
+      const standardSwissDistance = Math.abs(indexDistance - Math.floor(orderedIds.length / 2)) * 1_000;
+      const color = orientedPair(idA, idB, stats).colorCost * 100;
+      const seed = Math.abs(a.player.seed - b.player.seed);
+
+      return repeated + scoreDistance + standardSwissDistance + color + seed;
     }
 
-    function generateOptimalPairs(playerIds) {
+    function generateSwissPairs(playerIds) {
       const stats = calculateStats();
       const ordered = [...playerIds].sort((idA, idB) => {
         const a = stats.get(idA);
         const b = stats.get(idB);
         return b.points - a.points ||
-          b.buchholz - a.buchholz ||
+          a.player.seed - b.player.seed ||
           a.player.name.localeCompare(b.player.name, "es");
       });
       const memo = new Map();
@@ -351,17 +594,17 @@
         const first = remaining[0];
         let best = { cost: Number.POSITIVE_INFINITY, pairs: [] };
         const candidates = remaining.slice(1).sort((idA, idB) =>
-          pairCost(first, idA, stats) - pairCost(first, idB, stats)
+          pairingCost(first, idA, stats, ordered) - pairingCost(first, idB, stats, ordered)
         );
 
         for (const candidate of candidates) {
           const rest = remaining.filter(id => id !== first && id !== candidate);
           const solved = solve(rest);
-          const thisCost = pairCost(first, candidate, stats) + solved.cost;
-          if (thisCost < best.cost) {
+          const cost = pairingCost(first, candidate, stats, ordered) + solved.cost;
+          if (cost < best.cost) {
             best = {
-              cost: thisCost,
-              pairs: [orientPair(first, candidate, stats), ...solved.pairs]
+              cost,
+              pairs: [orientedPair(first, candidate, stats), ...solved.pairs]
             };
           }
         }
@@ -373,83 +616,179 @@
       return solve(ordered).pairs;
     }
 
-    function getGenerationContext() {
+    function generationContext() {
       const activeIds = activePlayers().map(player => player.id);
-      const expectedMatches = activeIds.length / 2;
-      const maxRound = state.matches.reduce((max, match) => Math.max(max, match.round || 1), 1);
-      const matchesInMaxRound = state.matches.filter(match => match.round === maxRound);
-      const currentRoundIsIncomplete = matchesInMaxRound.length > 0 && matchesInMaxRound.length < expectedMatches;
+      if (activeIds.length < 2 || activeIds.length % 2 !== 0) return null;
 
-      if (currentRoundIsIncomplete) {
-        const alreadyScheduled = new Set();
-        matchesInMaxRound.forEach(match => {
-          alreadyScheduled.add(match.whiteId);
-          alreadyScheduled.add(match.blackId);
+      const round = maxRound();
+      const expected = activeIds.length / 2;
+      const roundMatches = matchesForRound(round);
+      const isCurrentIncomplete = roundMatches.length > 0 && roundMatches.length < expected;
+
+      if (isCurrentIncomplete) {
+        const scheduledIds = new Set();
+        roundMatches.forEach(match => {
+          scheduledIds.add(match.whiteId);
+          scheduledIds.add(match.blackId);
         });
 
         return {
-          round: maxRound,
-          existingMatchesInRound: matchesInMaxRound.length,
-          playerIds: activeIds.filter(id => !alreadyScheduled.has(id)),
-          mode: "complete-current"
+          mode: "complete",
+          round,
+          existingMatches: roundMatches.length,
+          playerIds: activeIds.filter(id => !scheduledIds.has(id))
         };
       }
 
+      if (roundMatches.length >= expected && round >= settings.totalRounds) return null;
+
       return {
-        round: state.matches.length ? maxRound + 1 : 1,
-        existingMatchesInRound: 0,
-        playerIds: activeIds,
-        mode: "new-round"
+        mode: "new",
+        round: state.matches.length ? round + 1 : 1,
+        existingMatches: 0,
+        playerIds: activeIds
       };
     }
 
-    function generatePairings() {
-      const pending = pendingMatches();
-      if (pending.length > 0) {
-        showToast("Primero cargá o eliminá las partidas pendientes antes de generar nuevas.");
-        return;
+    async function generatePairings(options = {}) {
+      if (pendingMatches().length > 0) {
+        if (!options.silent) showToast("Primero cargá los resultados pendientes.");
+        return false;
       }
 
-      const context = getGenerationContext();
-      if (context.playerIds.length < 2) {
-        showToast("No hay suficientes jugadores disponibles para generar partidas.");
-        return;
+      const context = generationContext();
+      if (!context) {
+        if (!options.silent) showToast("No hay una ronda disponible para generar.");
+        return false;
       }
 
-      if (context.playerIds.length % 2 !== 0) {
-        showToast("Hay una cantidad impar de jugadores activos. Desactivá o agregá un jugador para evitar bye.");
-        return;
-      }
-
-      const pairs = generateOptimalPairs(context.playerIds);
+      const pairs = generateSwissPairs(context.playerIds);
+      const createdAt = new Date().toISOString();
       const newMatches = pairs.map((pair, index) => {
-        const matchIndex = context.existingMatchesInRound + index;
+        const matchIndex = context.existingMatches + index;
         return {
           id: `m-${Date.now()}-${index}-${Math.random().toString(36).slice(2, 8)}`,
           round: context.round,
-          batch: Math.floor(matchIndex / BOARDS_PER_BATCH) + 1,
-          board: (matchIndex % BOARDS_PER_BATCH) + 1,
+          batch: Math.floor(matchIndex / settings.boardsPerBatch) + 1,
+          board: (matchIndex % settings.boardsPerBatch) + 1,
           whiteId: pair.whiteId,
           blackId: pair.blackId,
           result: "",
-          createdAt: new Date().toISOString()
+          createdAt,
+          source: options.auto ? "auto" : "admin"
         };
       });
 
       state.matches.push(...newMatches);
-      saveState();
+      await saveState();
       currentView = "pairings";
       render();
-
-      const action = context.mode === "complete-current" ? "completó la ronda actual" : "generó una ronda nueva";
-      showToast(`Se ${action}: ${newMatches.length} partidas en tandas de hasta 3 tableros.`);
+      if (!options.silent) {
+        const verb = context.mode === "complete" ? "completó" : "generó";
+        showToast(`Se ${verb} la ronda ${context.round}: ${newMatches.length} partidas.`);
+      }
+      return true;
     }
 
-    function resultLabel(result) {
-      if (result === "1-0") return "1-0";
-      if (result === "0-1") return "0-1";
-      if (result === "0.5-0.5") return "0.5-0.5";
-      return "Pendiente";
+    async function maybeAutoGeneratePairings() {
+      if (!settings.autoPairing) return;
+      if (pendingMatches().length > 0) return;
+      const context = generationContext();
+      if (!context || context.playerIds.length === 0) return;
+      await generatePairings({ auto: true, silent: true });
+    }
+
+    async function setMatchResult(matchId, result) {
+      if (!adminUnlocked) return showToast("Modo administrador requerido.");
+      const match = state.matches.find(item => item.id === matchId);
+      if (!match) return;
+      match.result = result;
+      await saveState();
+      await maybeAutoGeneratePairings();
+      render();
+      showToast("Resultado guardado.");
+    }
+
+    async function updateMatch(matchId, updates) {
+      if (!adminUnlocked) return showToast("Modo administrador requerido.");
+      const match = state.matches.find(item => item.id === matchId);
+      if (!match) return;
+      Object.assign(match, updates);
+      await saveState();
+      render();
+    }
+
+    async function deleteMatch(matchId) {
+      if (!adminUnlocked) return showToast("Modo administrador requerido.");
+      const match = state.matches.find(item => item.id === matchId);
+      if (!match) return;
+      const confirmed = confirm(`¿Eliminar ${playerName(match.whiteId)} vs ${playerName(match.blackId)}?`);
+      if (!confirmed) return;
+      state.matches = state.matches.filter(item => item.id !== matchId);
+      await saveState();
+      render();
+      showToast("Partida eliminada.");
+    }
+
+    async function updatePlayer(playerId, updates) {
+      if (!adminUnlocked) return showToast("Modo administrador requerido.");
+      const player = getPlayer(playerId);
+      if (!player) return;
+      Object.assign(player, updates);
+      await saveState();
+      render();
+    }
+
+    async function addPlayer(form) {
+      if (!adminUnlocked) return showToast("Modo administrador requerido.");
+      const formData = new FormData(form);
+      const name = String(formData.get("name") || "").trim();
+      if (!name) return showToast("Ingresá un nombre.");
+      const nextSeed = Math.max(0, ...state.players.map(player => Number(player.seed) || 0)) + 1;
+      state.players.push({
+        id: `p-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        name,
+        seed: nextSeed,
+        active: true
+      });
+      await saveState();
+      form.reset();
+      render();
+      showToast("Jugador agregado.");
+    }
+
+    async function addManualMatch(form) {
+      if (!adminUnlocked) return showToast("Modo administrador requerido.");
+      const formData = new FormData(form);
+      const whiteId = formData.get("whiteId");
+      const blackId = formData.get("blackId");
+      if (!whiteId || !blackId || whiteId === blackId) return showToast("Elegí dos jugadores distintos.");
+
+      state.matches.push({
+        id: `m-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        round: positiveNumber(formData.get("round"), maxRound()),
+        batch: positiveNumber(formData.get("batch"), 1),
+        board: positiveNumber(formData.get("board"), 1),
+        whiteId,
+        blackId,
+        result: formData.get("result") || "",
+        createdAt: new Date().toISOString(),
+        source: "manual"
+      });
+      await saveState();
+      form.reset();
+      render();
+      showToast("Partida cargada.");
+    }
+
+    function groupedByBatch(matches) {
+      const groups = new Map();
+      matches.forEach(match => {
+        const key = `Ronda ${match.round} · Tanda ${match.batch}`;
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(match);
+      });
+      return [...groups.entries()];
     }
 
     function resultText(match) {
@@ -459,398 +798,290 @@
       return "Pendiente";
     }
 
-    function setMatchResult(matchId, result) {
-      const match = state.matches.find(item => item.id === matchId);
-      if (!match) return;
-      match.result = result;
-      saveState();
-      render();
+    function formatPoints(value) {
+      return Number.isInteger(value) ? String(value) : Number(value).toFixed(1);
     }
 
-    function updateMatch(matchId, updates) {
-      const match = state.matches.find(item => item.id === matchId);
-      if (!match) return;
-      Object.assign(match, updates);
-      saveState();
-      render();
-    }
-
-    function deleteMatch(matchId) {
-      const match = state.matches.find(item => item.id === matchId);
-      if (!match) return;
-      const confirmed = confirm(`¿Eliminar la partida ${playerName(match.whiteId)} vs ${playerName(match.blackId)}?`);
-      if (!confirmed) return;
-      state.matches = state.matches.filter(item => item.id !== matchId);
-      saveState();
-      render();
-    }
-
-    function addManualMatch(form) {
-      const formData = new FormData(form);
-      const whiteId = formData.get("whiteId");
-      const blackId = formData.get("blackId");
-      const result = formData.get("result");
-      const round = Number(formData.get("round"));
-      const batch = Number(formData.get("batch"));
-      const board = Number(formData.get("board"));
-
-      if (!whiteId || !blackId || whiteId === blackId) {
-        showToast("Elegí dos jugadores distintos.");
-        return;
-      }
-
-      state.matches.push({
-        id: `m-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-        round: Number.isFinite(round) && round > 0 ? round : 1,
-        batch: Number.isFinite(batch) && batch > 0 ? batch : 1,
-        board: Number.isFinite(board) && board > 0 ? board : 1,
-        whiteId,
-        blackId,
-        result,
-        createdAt: new Date().toISOString()
-      });
-
-      saveState();
-      form.reset();
-      render();
-      showToast("Partida cargada.");
-    }
-
-    function updatePlayer(playerId, updates) {
-      const player = getPlayer(playerId);
-      if (!player) return;
-      Object.assign(player, updates);
-      saveState();
-      render();
-    }
-
-    function addPlayer(form) {
-      const formData = new FormData(form);
-      const name = String(formData.get("name") || "").trim();
-      if (!name) {
-        showToast("Escribí el nombre del jugador.");
-        return;
-      }
-
-      state.players.push({
-        id: `p-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-        name,
-        active: true
-      });
-      saveState();
-      form.reset();
-      render();
-      showToast("Jugador agregado.");
-    }
-
-    function removeOrDeactivatePlayer(playerId) {
-      const hasMatches = state.matches.some(match => match.whiteId === playerId || match.blackId === playerId);
-      if (hasMatches) {
-        updatePlayer(playerId, { active: false });
-        showToast("El jugador tiene historial, por eso quedó inactivo en vez de eliminarse.");
-        return;
-      }
-
-      state.players = state.players.filter(player => player.id !== playerId);
-      saveState();
-      render();
-    }
-
-    function resetTournament() {
-      const confirmed = confirm("¿Restablecer participantes y resultados iniciales? Se borrarán los cambios guardados.");
-      if (!confirmed) return;
-      state = createInitialState();
-      saveState();
-      currentView = "standings";
-      render();
-      showToast("Datos iniciales restablecidos.");
-    }
-
-    function showToast(message) {
-      const alerts = document.querySelector("#alerts");
-      const node = document.createElement("div");
-      node.className = "rounded-lg border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-zinc-800 shadow-sm";
-      node.textContent = message;
-      alerts.prepend(node);
-      setTimeout(() => node.remove(), 4200);
+    function colorBadges(colors) {
+      if (!colors.length) return `<span class="text-slate-400">-</span>`;
+      return colors.map(color => {
+        const title = color === "B" ? "Blancas" : "Negras";
+        const classes = color === "B"
+          ? "border-slate-300 bg-white text-slate-950"
+          : "border-slate-950 bg-slate-950 text-white";
+        return `<span title="${title}" class="inline-flex h-6 min-w-6 items-center justify-center rounded-md border px-1.5 text-xs font-black ${classes}">${color}</span>`;
+      }).join(" ");
     }
 
     function renderSummary() {
       const stats = calculateStats();
-      const activeCount = activePlayers().length;
-      const completed = completedMatches().length;
-      const pending = pendingMatches().length;
-      const maxRound = state.matches.reduce((max, match) => Math.max(max, match.round || 1), 1);
-      const leaderPoints = standings()[0]?.points || 0;
-
+      const table = standings();
+      const pending = pendingMatches();
+      const completed = completedMatches();
+      const leader = table[0];
+      const context = generationContext();
       const cards = [
-        { label: "Participantes activos", value: activeCount, detail: activeCount % 2 === 0 ? "Sin bye en condiciones normales" : "Cantidad impar" },
-        { label: "Ronda actual", value: maxRound, detail: `${Math.ceil(activeCount / 2)} partidas por ronda completa` },
-        { label: "Partidas terminadas", value: completed, detail: `${pending} pendientes` },
-        { label: "Punta del torneo", value: formatPoints(leaderPoints), detail: leaderNames(stats, leaderPoints) }
+        { label: "Jugadores", value: activePlayers().length, detail: `${state.players.length} registrados` },
+        { label: "Pendientes", value: pending.length, detail: pending.length ? `Ronda ${pending[0].round}` : "Sin partidas abiertas" },
+        { label: "Terminadas", value: completed.length, detail: `${settings.totalRounds} rondas configuradas` },
+        { label: "Líder", value: leader ? formatPoints(leader.points) : "0", detail: leader ? leader.player.name : "Sin líder" }
       ];
 
       document.querySelector("#summary").innerHTML = cards.map(card => `
-        <article class="rounded-lg border border-zinc-200 bg-white p-4">
-          <p class="text-xs font-semibold uppercase tracking-normal text-zinc-500">${card.label}</p>
-          <p class="mt-1 text-2xl font-bold text-zinc-950">${card.value}</p>
-          <p class="mt-1 truncate text-sm text-zinc-600">${escapeHtml(card.detail)}</p>
+        <article class="rounded-2xl border border-white/70 bg-white/85 p-4 shadow-sm">
+          <p class="text-xs font-black uppercase tracking-[0.16em] text-slate-500">${card.label}</p>
+          <p class="mt-1 text-3xl font-black text-slate-950">${escapeHtml(card.value)}</p>
+          <p class="mt-1 truncate text-sm font-semibold text-slate-600">${escapeHtml(card.detail)}</p>
         </article>
       `).join("");
+
+      document.querySelector("#heroRound").textContent = String(maxRound());
+      document.querySelector("#adminBadge").textContent = adminUnlocked ? "Admin activo" : "Bloqueado";
+      document.querySelector("#adminBadge").className = adminUnlocked
+        ? "rounded-full bg-emerald-400 px-3 py-1 text-xs font-black text-emerald-950"
+        : "rounded-full bg-white/10 px-3 py-1 text-xs font-black text-white";
+
+      const next = pending.slice(0, settings.boardsPerBatch);
+      document.querySelector("#nextBatchPreview").innerHTML = next.length
+        ? next.map(match => `
+            <div class="rounded-xl bg-white/10 p-3 text-sm">
+              <div class="font-black">Mesa ${match.board}</div>
+              <div class="mt-1 text-slate-200">${escapeHtml(playerName(match.whiteId))} · ${escapeHtml(playerName(match.blackId))}</div>
+            </div>
+          `).join("")
+        : `<div class="rounded-xl bg-white/10 p-3 text-sm text-slate-200">${context ? "Lista para emparejar" : "Torneo sin rondas pendientes"}</div>`;
     }
 
-    function leaderNames(stats, points) {
-      const leaders = [...stats.values()]
-        .filter(item => item.points === points)
-        .map(item => item.player.name)
-        .slice(0, 2);
-      return leaders.join(", ") || "Sin datos";
-    }
-
-    function formatPoints(value) {
-      return Number.isInteger(value) ? String(value) : value.toFixed(1);
-    }
-
-    function colorBadges(colors) {
-      if (!colors.length) return `<span class="text-zinc-400">Sin colores</span>`;
-      return colors.map(color => {
-        const label = color === "B" ? "Blancas" : "Negras";
-        const classes = color === "B"
-          ? "border-zinc-300 bg-white text-zinc-900"
-          : "border-zinc-900 bg-zinc-900 text-white";
-        return `<span class="inline-flex h-6 min-w-6 items-center justify-center rounded border px-1.5 text-xs font-bold ${classes}" title="${label}">${color}</span>`;
-      }).join(" ");
-    }
-
-    function renderStandings() {
-      const rows = standings();
+    function renderDashboard() {
       const stats = calculateStats();
-      document.querySelector("#view-standings").innerHTML = `
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 class="text-lg font-bold">Tabla de posiciones</h2>
-            <p class="text-sm text-zinc-600">Ordenada por puntos, Buchholz simple y partidas jugadas.</p>
+      const table = standings();
+      const pending = pendingMatches();
+      const currentRoundMatches = matchesForRound(maxRound());
+      const completedInRound = currentRoundMatches.filter(match => match.result).length;
+      const expected = activePlayers().length / 2;
+      const progress = expected ? Math.round((completedInRound / expected) * 100) : 0;
+
+      document.querySelector("#view-dashboard").innerHTML = `
+        <div class="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+          <section class="surface rounded-2xl p-5">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 class="text-xl font-black">Centro del torneo</h2>
+                <p class="mt-1 text-sm font-semibold text-slate-600">${escapeHtml(settings.tournamentName)}</p>
+              </div>
+              <button id="quickGenerate" class="admin-only rounded-xl bg-slate-950 px-4 py-3 text-sm font-black text-white" ${adminUnlocked ? "" : "aria-disabled=\"true\""}>Emparejar ahora</button>
+            </div>
+
+            <div class="mt-5">
+              <div class="flex items-center justify-between text-sm font-bold text-slate-600">
+                <span>Ronda ${maxRound()}</span>
+                <span>${completedInRound}/${expected} resultados</span>
+              </div>
+              <div class="mt-2 h-3 overflow-hidden rounded-full bg-slate-200">
+                <div class="h-full rounded-full bg-emerald-600" style="width:${Math.min(100, progress)}%"></div>
+              </div>
+            </div>
+
+            <div class="mt-5 grid gap-3 md:grid-cols-3">
+              ${table.slice(0, 3).map((row, index) => `
+                <article class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p class="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Puesto ${index + 1}</p>
+                  <p class="mt-2 min-h-12 text-base font-black text-slate-950">${escapeHtml(row.player.name)}</p>
+                  <p class="mt-2 text-3xl font-black text-emerald-700">${formatPoints(row.points)}</p>
+                </article>
+              `).join("")}
+            </div>
+          </section>
+
+          <section class="surface rounded-2xl p-5">
+            <div class="flex items-center justify-between gap-3">
+              <h2 class="text-xl font-black">Próximas mesas</h2>
+              <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-amber-900">${pending.length} pendientes</span>
+            </div>
+            <div class="mt-4 space-y-3">
+              ${pending.length ? pending.slice(0, 5).map(match => miniPairing(match)).join("") : emptyState("No hay partidas pendientes.")}
+            </div>
+          </section>
+        </div>
+
+        <section class="surface mt-4 rounded-2xl p-5">
+          <h2 class="text-xl font-black">Forma reciente</h2>
+          <div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            ${table.slice(0, 8).map(row => `
+              <article class="rounded-2xl border border-slate-200 bg-white p-4">
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <p class="font-black">${escapeHtml(row.player.name)}</p>
+                    <p class="mt-1 text-xs font-bold text-slate-500">${row.wins}G · ${row.draws}T · ${row.losses}P</p>
+                  </div>
+                  <span class="rounded-full bg-slate-950 px-3 py-1 text-sm font-black text-white">${formatPoints(row.points)}</span>
+                </div>
+                <div class="mt-3">${colorBadges(row.colorHistory)}</div>
+              </article>
+            `).join("")}
           </div>
-          <button id="generateFromStandings" class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white">Generar próximas partidas</button>
-        </div>
-
-        <div class="scroll-shadow mt-3 overflow-x-auto rounded-lg border border-zinc-200 bg-white">
-          <table class="min-w-[920px] w-full text-left text-sm">
-            <thead class="border-b border-zinc-200 bg-zinc-50 text-xs uppercase tracking-normal text-zinc-500">
-              <tr>
-                <th class="px-3 py-3">Pos</th>
-                <th class="px-3 py-3">Jugador</th>
-                <th class="px-3 py-3">Puntos</th>
-                <th class="px-3 py-3">Buchholz</th>
-                <th class="px-3 py-3">PJ</th>
-                <th class="px-3 py-3">Colores</th>
-                <th class="px-3 py-3">Rivales</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-zinc-100">
-              ${rows.map((row, index) => {
-                const rivals = row.rivals.map(id => playerName(id)).join(", ");
-                return `
-                  <tr class="${row.player.active ? "" : "bg-zinc-50 text-zinc-400"}">
-                    <td class="px-3 py-3 font-semibold">${index + 1}</td>
-                    <td class="px-3 py-3">
-                      <div class="font-semibold">${escapeHtml(row.player.name)}</div>
-                      ${row.player.active ? "" : `<div class="text-xs text-zinc-400">Inactivo</div>`}
-                    </td>
-                    <td class="px-3 py-3 font-bold">${formatPoints(row.points)}</td>
-                    <td class="px-3 py-3">${formatPoints(row.buchholz)}</td>
-                    <td class="px-3 py-3">${row.played}</td>
-                    <td class="px-3 py-3 whitespace-nowrap">${colorBadges(row.colors)}</td>
-                    <td class="px-3 py-3 text-zinc-600">${escapeHtml(rivals || "Sin rivales")}</td>
-                  </tr>
-                `;
-              }).join("")}
-            </tbody>
-          </table>
-        </div>
-
-        <div class="mt-4 grid gap-3 md:grid-cols-2">
-          ${renderTieBreakHelp(stats)}
-          ${renderRoundStatus()}
-        </div>
+        </section>
       `;
 
-      document.querySelector("#generateFromStandings").addEventListener("click", generatePairings);
+      document.querySelector("#quickGenerate")?.addEventListener("click", () => generatePairings());
     }
 
-    function renderTieBreakHelp(stats) {
-      const completed = completedMatches().length;
-      const totalBuchholz = [...stats.values()].reduce((sum, item) => sum + item.buchholz, 0);
+    function miniPairing(match) {
       return `
-        <article class="rounded-lg border border-zinc-200 bg-white p-4">
-          <h3 class="font-bold">Buchholz simple</h3>
-          <p class="mt-1 text-sm text-zinc-600">Cada jugador suma los puntos actuales de sus rivales ya enfrentados.</p>
-          <p class="mt-3 text-sm text-zinc-700"><span class="font-semibold">${completed}</span> partidas terminadas · acumulado del desempate: <span class="font-semibold">${formatPoints(totalBuchholz)}</span></p>
-        </article>
-      `;
-    }
-
-    function renderRoundStatus() {
-      const context = getGenerationContext();
-      const text = context.mode === "complete-current"
-        ? `La próxima generación completa la ronda ${context.round} con ${context.playerIds.length / 2} partidas.`
-        : `La próxima generación crea la ronda ${context.round} con ${context.playerIds.length / 2} partidas.`;
-      return `
-        <article class="rounded-lg border border-zinc-200 bg-white p-4">
-          <h3 class="font-bold">Estado de emparejamientos</h3>
-          <p class="mt-1 text-sm text-zinc-600">${text}</p>
-          <p class="mt-3 text-sm text-zinc-700">Las tandas se reparten automáticamente en bloques de máximo ${BOARDS_PER_BATCH} tableros.</p>
+        <article class="rounded-2xl border border-slate-200 bg-white p-3">
+          <div class="flex items-center justify-between gap-3">
+            <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">R${match.round} · T${match.batch} · M${match.board}</span>
+            <span class="text-xs font-black text-slate-400">${escapeHtml(resultText(match))}</span>
+          </div>
+          <div class="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-2 text-sm">
+            <div class="rounded-xl border border-slate-200 bg-white p-3 font-black">${escapeHtml(playerName(match.whiteId))}</div>
+            <div class="font-black text-slate-400">vs</div>
+            <div class="rounded-xl bg-slate-950 p-3 font-black text-white">${escapeHtml(playerName(match.blackId))}</div>
+          </div>
         </article>
       `;
     }
 
     function renderPairings() {
       const pending = pendingMatches();
-      const grouped = groupByRoundAndBatch(pending);
-
+      const grouped = groupedByBatch(pending);
       document.querySelector("#view-pairings").innerHTML = `
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 class="text-lg font-bold">Próximas partidas</h2>
-            <p class="text-sm text-zinc-600">La columna izquierda juega con blancas; la derecha con negras.</p>
+        <section class="surface rounded-2xl p-5">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 class="text-xl font-black">Partidas definidas</h2>
+              <p class="mt-1 text-sm font-semibold text-slate-600">Izquierda blancas, derecha negras.</p>
+            </div>
+            <button id="pairingGenerate" class="admin-only rounded-xl bg-slate-950 px-4 py-3 text-sm font-black text-white" ${adminUnlocked ? "" : "aria-disabled=\"true\""}>Generar suizo</button>
           </div>
-          <button id="generatePairings" class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white">Generar próximas partidas</button>
-        </div>
-
-        <div class="mt-3 space-y-4">
-          ${pending.length ? renderGroupedPending(grouped) : emptyState("No hay partidas pendientes. Generá la siguiente tanda o ronda cuando quieras continuar.")}
-        </div>
+          <div class="mt-5 space-y-5">
+            ${grouped.length ? grouped.map(([title, matches]) => `
+              <section>
+                <h3 class="mb-3 text-sm font-black uppercase tracking-[0.16em] text-slate-500">${title}</h3>
+                <div class="grid gap-3 xl:grid-cols-2">${matches.map(pairingCard).join("")}</div>
+              </section>
+            `).join("") : emptyState("No hay partidas pendientes.")}
+          </div>
+        </section>
       `;
 
-      document.querySelector("#generatePairings").addEventListener("click", generatePairings);
+      document.querySelector("#pairingGenerate")?.addEventListener("click", () => generatePairings());
       pending.forEach(match => {
-        const form = document.querySelector(`[data-result-form="${match.id}"]`);
-        form?.addEventListener("submit", event => {
+        document.querySelector(`[data-result-form="${match.id}"]`)?.addEventListener("submit", event => {
           event.preventDefault();
-          const result = new FormData(form).get("result");
-          if (!result) {
-            showToast("Elegí un resultado antes de cargar.");
-            return;
-          }
-          setMatchResult(match.id, result);
-          showToast("Resultado cargado.");
+          setMatchResult(match.id, new FormData(event.currentTarget).get("result"));
         });
-        document.querySelector(`[data-delete-match="${match.id}"]`)?.addEventListener("click", () => {
-          deleteMatch(match.id);
-        });
+        document.querySelector(`[data-delete-match="${match.id}"]`)?.addEventListener("click", () => deleteMatch(match.id));
       });
     }
 
-    function groupByRoundAndBatch(matches) {
-      const groups = new Map();
-      for (const match of matches) {
-        const key = `Ronda ${match.round} · Tanda ${match.batch}`;
-        if (!groups.has(key)) groups.set(key, []);
-        groups.get(key).push(match);
-      }
-      return [...groups.entries()];
+    function pairingCard(match) {
+      const adminControls = adminUnlocked ? `
+        <form class="mt-4 flex flex-col gap-2 sm:flex-row" data-result-form="${match.id}">
+          <select name="result" required class="min-h-11 flex-1 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold">
+            <option value="">Resultado...</option>
+            <option value="1-0">1-0 · gana blancas</option>
+            <option value="0-1">0-1 · gana negras</option>
+            <option value="0.5-0.5">0.5-0.5 · tablas</option>
+          </select>
+          <button class="rounded-xl bg-emerald-700 px-4 py-3 text-sm font-black text-white">Guardar</button>
+          <button type="button" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-black text-red-800" data-delete-match="${match.id}">Eliminar</button>
+        </form>
+      ` : `<div class="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm font-bold text-slate-500">Admin bloqueado</div>`;
+
+      return `
+        <article class="rounded-2xl border border-slate-200 bg-white p-4">
+          <div class="flex items-center justify-between gap-3">
+            <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">Mesa ${match.board}</span>
+            <span class="text-xs font-black uppercase tracking-[0.16em] text-slate-400">${match.source === "auto" ? "Auto" : "Manual"}</span>
+          </div>
+          <div class="mt-4 grid grid-cols-[1fr_auto_1fr] items-stretch gap-2">
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p class="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Blancas</p>
+              <p class="mt-2 text-base font-black">${escapeHtml(playerName(match.whiteId))}</p>
+            </div>
+            <div class="flex items-center text-sm font-black text-slate-400">vs</div>
+            <div class="rounded-2xl bg-slate-950 p-4 text-white">
+              <p class="text-xs font-black uppercase tracking-[0.14em] text-slate-300">Negras</p>
+              <p class="mt-2 text-base font-black">${escapeHtml(playerName(match.blackId))}</p>
+            </div>
+          </div>
+          ${adminControls}
+        </article>
+      `;
     }
 
-    function renderGroupedPending(groups) {
-      return groups.map(([title, matches]) => `
-        <section>
-          <h3 class="mb-2 text-sm font-bold uppercase tracking-normal text-zinc-500">${title}</h3>
-          <div class="grid gap-3 lg:grid-cols-2">
-            ${matches.map(renderPendingCard).join("")}
+    function renderStandings() {
+      const rows = standings();
+      document.querySelector("#view-standings").innerHTML = `
+        <section class="surface rounded-2xl p-5">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 class="text-xl font-black">Tabla de posiciones</h2>
+              <p class="mt-1 text-sm font-semibold text-slate-600">Ordenada por puntos, victorias y criterio interno del sistema suizo.</p>
+            </div>
+            <span class="text-xs font-bold text-slate-500">${escapeHtml(settings.logoSource)}</span>
+          </div>
+          <div class="scroll-shadow mt-5 overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+            <table class="w-full min-w-[860px] text-left text-sm">
+              <thead class="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-[0.12em] text-slate-500">
+                <tr>
+                  <th class="px-3 py-3">#</th>
+                  <th class="px-3 py-3">Jugador</th>
+                  <th class="px-3 py-3">Pts</th>
+                  <th class="px-3 py-3">G-T-P</th>
+                  <th class="px-3 py-3">PJ</th>
+                  <th class="px-3 py-3">Colores</th>
+                  <th class="px-3 py-3">Rivales</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                ${rows.map((row, index) => `
+                  <tr class="${row.player.active ? "" : "bg-slate-50 text-slate-400"}">
+                    <td class="px-3 py-3 font-black">${index + 1}</td>
+                    <td class="px-3 py-3">
+                      <div class="font-black">${escapeHtml(row.player.name)}</div>
+                      <div class="text-xs font-bold text-slate-400">Seed ${row.player.seed}${row.player.active ? "" : " · inactivo"}</div>
+                    </td>
+                    <td class="px-3 py-3 text-lg font-black text-emerald-700">${formatPoints(row.points)}</td>
+                    <td class="px-3 py-3">${row.wins}-${row.draws}-${row.losses}</td>
+                    <td class="px-3 py-3">${row.played}</td>
+                    <td class="px-3 py-3 whitespace-nowrap">${colorBadges(row.colorHistory)}</td>
+                    <td class="px-3 py-3 text-slate-600">${escapeHtml(row.completedOpponentIds.map(playerName).join(", ") || "-")}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
           </div>
         </section>
-      `).join("");
-    }
-
-    function renderPendingCard(match) {
-      return `
-        <article class="rounded-lg border border-zinc-200 bg-white p-4">
-          <div class="mb-3 flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold text-zinc-600">Tablero ${match.board}</div>
-            <button class="text-sm font-semibold text-red-700" data-delete-match="${match.id}">Eliminar</button>
-          </div>
-          <div class="grid grid-cols-[1fr_auto_1fr] items-stretch gap-2">
-            <div class="rounded-lg border border-zinc-200 bg-zinc-50 p-3">
-              <div class="text-xs font-semibold uppercase tracking-normal text-zinc-500">Blancas</div>
-              <div class="mt-1 font-bold">${escapeHtml(playerName(match.whiteId))}</div>
-            </div>
-            <div class="flex items-center text-sm font-bold text-zinc-400">vs</div>
-            <div class="rounded-lg border border-zinc-900 bg-zinc-900 p-3 text-white">
-              <div class="text-xs font-semibold uppercase tracking-normal text-zinc-300">Negras</div>
-              <div class="mt-1 font-bold">${escapeHtml(playerName(match.blackId))}</div>
-            </div>
-          </div>
-          <form class="mt-3 flex flex-col gap-2 sm:flex-row" data-result-form="${match.id}">
-            <select name="result" class="min-h-10 flex-1 rounded-lg border border-zinc-300 bg-white px-3 text-sm">
-              <option value="">Resultado...</option>
-              <option value="1-0">1-0 · gana blancas</option>
-              <option value="0-1">0-1 · gana negras</option>
-              <option value="0.5-0.5">0.5-0.5 · tablas</option>
-            </select>
-            <button class="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white">Cargar</button>
-          </form>
-        </article>
       `;
     }
 
     function renderHistory() {
       const matches = sortedMatches();
-      const nextRound = state.matches.reduce((max, match) => Math.max(max, match.round || 1), 1);
-
       document.querySelector("#view-history").innerHTML = `
-        <div class="grid gap-4 lg:grid-cols-[1fr_360px]">
-          <section>
-            <div>
-              <h2 class="text-lg font-bold">Historial de partidas</h2>
-              <p class="text-sm text-zinc-600">Podés corregir resultado, colores, ubicación o eliminar una partida cargada por error.</p>
-            </div>
-            <div class="mt-3 space-y-3">
-              ${matches.length ? matches.map(renderHistoryCard).join("") : emptyState("Todavía no hay partidas cargadas.")}
+        <div class="grid gap-4 lg:grid-cols-[1fr_380px]">
+          <section class="surface rounded-2xl p-5">
+            <h2 class="text-xl font-black">Historial</h2>
+            <div class="mt-4 space-y-3">
+              ${matches.length ? matches.map(historyCard).join("") : emptyState("Todavía no hay partidas.")}
             </div>
           </section>
-
-          <aside class="rounded-lg border border-zinc-200 bg-white p-4">
-            <h3 class="font-bold">Cargar partida manual</h3>
-            <p class="mt-1 text-sm text-zinc-600">Usá esto para registrar una partida que no fue generada automáticamente.</p>
-            ${renderManualMatchForm(nextRound)}
+          <aside class="surface rounded-2xl p-5 ${adminUnlocked ? "" : "hidden"}">
+            <h2 class="text-xl font-black">Carga manual</h2>
+            ${manualMatchForm()}
           </aside>
         </div>
       `;
 
       matches.forEach(match => {
         const card = document.querySelector(`[data-history-card="${match.id}"]`);
-        card?.querySelector(`[data-history-result]`)?.addEventListener("change", event => {
-          setMatchResult(match.id, event.target.value);
-        });
-        card?.querySelector(`[data-swap-colors]`)?.addEventListener("click", () => {
-          updateMatch(match.id, { whiteId: match.blackId, blackId: match.whiteId });
-        });
-        card?.querySelector(`[data-delete-match]`)?.addEventListener("click", () => deleteMatch(match.id));
-        card?.querySelector(`[data-round]`)?.addEventListener("change", event => {
-          updateMatch(match.id, { round: positiveNumber(event.target.value, match.round) });
-        });
-        card?.querySelector(`[data-batch]`)?.addEventListener("change", event => {
-          updateMatch(match.id, { batch: positiveNumber(event.target.value, match.batch) });
-        });
-        card?.querySelector(`[data-board]`)?.addEventListener("change", event => {
-          updateMatch(match.id, { board: positiveNumber(event.target.value, match.board) });
-        });
-        card?.querySelector(`[data-white-player]`)?.addEventListener("change", event => {
-          if (event.target.value === match.blackId) {
-            showToast("Blancas y negras deben ser jugadores distintos.");
-            render();
-            return;
-          }
-          updateMatch(match.id, { whiteId: event.target.value });
-        });
-        card?.querySelector(`[data-black-player]`)?.addEventListener("change", event => {
-          if (event.target.value === match.whiteId) {
-            showToast("Blancas y negras deben ser jugadores distintos.");
-            render();
-            return;
-          }
-          updateMatch(match.id, { blackId: event.target.value });
-        });
+        card?.querySelector("[data-history-result]")?.addEventListener("change", event => setMatchResult(match.id, event.target.value));
+        card?.querySelector("[data-delete-history]")?.addEventListener("click", () => deleteMatch(match.id));
+        card?.querySelector("[data-swap]")?.addEventListener("click", () => updateMatch(match.id, { whiteId: match.blackId, blackId: match.whiteId }));
+        card?.querySelector("[data-round]")?.addEventListener("change", event => updateMatch(match.id, { round: positiveNumber(event.target.value, match.round) }));
+        card?.querySelector("[data-batch]")?.addEventListener("change", event => updateMatch(match.id, { batch: positiveNumber(event.target.value, match.batch) }));
+        card?.querySelector("[data-board]")?.addEventListener("change", event => updateMatch(match.id, { board: positiveNumber(event.target.value, match.board) }));
       });
 
       document.querySelector("#manualMatchForm")?.addEventListener("submit", event => {
@@ -859,9 +1090,227 @@
       });
     }
 
-    function positiveNumber(value, fallback) {
-      const number = Number(value);
-      return Number.isFinite(number) && number > 0 ? number : fallback;
+    function historyCard(match) {
+      const adminFields = adminUnlocked ? `
+        <div class="mt-4 grid gap-2 sm:grid-cols-3">
+          <input data-round type="number" min="1" value="${match.round}" class="min-h-10 rounded-xl border border-slate-300 px-3 text-sm">
+          <input data-batch type="number" min="1" value="${match.batch}" class="min-h-10 rounded-xl border border-slate-300 px-3 text-sm">
+          <input data-board type="number" min="1" value="${match.board}" class="min-h-10 rounded-xl border border-slate-300 px-3 text-sm">
+        </div>
+        <div class="mt-3 flex flex-col gap-2 sm:flex-row">
+          <select data-history-result class="min-h-10 flex-1 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold">
+            <option value="" ${!match.result ? "selected" : ""}>Pendiente</option>
+            <option value="1-0" ${match.result === "1-0" ? "selected" : ""}>1-0</option>
+            <option value="0-1" ${match.result === "0-1" ? "selected" : ""}>0-1</option>
+            <option value="0.5-0.5" ${match.result === "0.5-0.5" ? "selected" : ""}>0.5-0.5</option>
+          </select>
+          <button data-swap class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-black">Cambiar colores</button>
+          <button data-delete-history class="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-black text-red-800">Eliminar</button>
+        </div>
+      ` : "";
+
+      return `
+        <article class="rounded-2xl border border-slate-200 bg-white p-4" data-history-card="${match.id}">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p class="text-xs font-black uppercase tracking-[0.14em] text-slate-500">R${match.round} · T${match.batch} · M${match.board}</p>
+              <p class="mt-1 text-base font-black">${escapeHtml(playerName(match.whiteId))} <span class="text-slate-400">vs</span> ${escapeHtml(playerName(match.blackId))}</p>
+              <p class="mt-1 text-sm font-bold text-slate-600">${escapeHtml(resultText(match))}</p>
+            </div>
+            <span class="rounded-full ${match.result ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-900"} px-3 py-1 text-xs font-black">${match.result || "Pendiente"}</span>
+          </div>
+          ${adminFields}
+        </article>
+      `;
+    }
+
+    function manualMatchForm() {
+      return `
+        <form id="manualMatchForm" class="mt-4 space-y-3">
+          <div class="grid grid-cols-3 gap-2">
+            <input name="round" type="number" min="1" value="${maxRound()}" class="min-h-10 rounded-xl border border-slate-300 px-3 text-sm">
+            <input name="batch" type="number" min="1" value="1" class="min-h-10 rounded-xl border border-slate-300 px-3 text-sm">
+            <input name="board" type="number" min="1" value="1" class="min-h-10 rounded-xl border border-slate-300 px-3 text-sm">
+          </div>
+          <select name="whiteId" class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold">
+            <option value="">Blancas...</option>
+            ${playerOptions("")}
+          </select>
+          <select name="blackId" class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold">
+            <option value="">Negras...</option>
+            ${playerOptions("")}
+          </select>
+          <select name="result" class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold">
+            <option value="">Pendiente</option>
+            <option value="1-0">1-0</option>
+            <option value="0-1">0-1</option>
+            <option value="0.5-0.5">0.5-0.5</option>
+          </select>
+          <button class="w-full rounded-xl bg-emerald-700 px-4 py-3 text-sm font-black text-white">Guardar partida</button>
+        </form>
+      `;
+    }
+
+    function renderPlayers() {
+      const stats = calculateStats();
+      const players = [...state.players].sort((a, b) => a.seed - b.seed || a.name.localeCompare(b.name, "es"));
+      document.querySelector("#view-players").innerHTML = `
+        <div class="grid gap-4 lg:grid-cols-[1fr_360px]">
+          <section class="surface rounded-2xl p-5">
+            <h2 class="text-xl font-black">Jugadores</h2>
+            <div class="mt-4 grid gap-3">
+              ${players.map(player => playerRow(player, stats.get(player.id))).join("")}
+            </div>
+          </section>
+          <aside class="surface rounded-2xl p-5 ${adminUnlocked ? "" : "hidden"}">
+            <h2 class="text-xl font-black">Nuevo jugador</h2>
+            <form id="addPlayerForm" class="mt-4 flex gap-2">
+              <input name="name" class="min-h-11 min-w-0 flex-1 rounded-xl border border-slate-300 px-3 text-sm font-semibold" placeholder="Nombre completo">
+              <button class="rounded-xl bg-slate-950 px-4 py-3 text-sm font-black text-white">Agregar</button>
+            </form>
+          </aside>
+        </div>
+      `;
+
+      players.forEach(player => {
+        const row = document.querySelector(`[data-player-row="${player.id}"]`);
+        row?.querySelector("[data-player-name]")?.addEventListener("change", event => {
+          const name = event.target.value.trim();
+          if (!name) return render();
+          updatePlayer(player.id, { name });
+        });
+        row?.querySelector("[data-player-seed]")?.addEventListener("change", event => {
+          updatePlayer(player.id, { seed: positiveNumber(event.target.value, player.seed) });
+        });
+        row?.querySelector("[data-player-active]")?.addEventListener("change", event => {
+          updatePlayer(player.id, { active: event.target.checked });
+        });
+      });
+
+      document.querySelector("#addPlayerForm")?.addEventListener("submit", event => {
+        event.preventDefault();
+        addPlayer(event.currentTarget);
+      });
+    }
+
+    function playerRow(player, stat) {
+      const locked = !adminUnlocked;
+      return `
+        <article class="rounded-2xl border border-slate-200 bg-white p-4" data-player-row="${player.id}">
+          <div class="grid gap-3 lg:grid-cols-[90px_1fr_auto_auto] lg:items-center">
+            <input data-player-seed type="number" min="1" value="${player.seed}" ${locked ? "disabled" : ""} class="min-h-10 rounded-xl border border-slate-300 px-3 text-sm font-black">
+            <input data-player-name value="${escapeAttribute(player.name)}" ${locked ? "disabled" : ""} class="min-h-10 rounded-xl border border-slate-300 px-3 text-sm font-black">
+            <label class="flex items-center gap-2 text-sm font-black text-slate-700">
+              <input data-player-active type="checkbox" ${player.active ? "checked" : ""} ${locked ? "disabled" : ""} class="h-4 w-4">
+              Activo
+            </label>
+            <div class="text-sm font-black text-emerald-700">${formatPoints(stat?.points || 0)} pts</div>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs font-bold text-slate-500">
+            <span>${stat?.played || 0} partidas</span>
+            <span>${stat?.wins || 0}G ${stat?.draws || 0}T ${stat?.losses || 0}P</span>
+            <span>${colorBadges(stat?.colorHistory || [])}</span>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderDatabase() {
+      document.querySelector("#view-database").innerHTML = `
+        <section class="surface rounded-2xl p-5">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 class="text-xl font-black">Base local</h2>
+              <p class="mt-1 text-sm font-semibold text-slate-600">${dbAvailable ? "IndexedDB activo" : "Fallback localStorage activo"}</p>
+            </div>
+            <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">${state.matches.length} partidas · ${state.players.length} jugadores</span>
+          </div>
+
+          <div class="mt-5 grid gap-4 lg:grid-cols-2">
+            <form id="settingsForm" class="rounded-2xl border border-slate-200 bg-white p-4 ${adminUnlocked ? "" : "hidden"}">
+              <h3 class="font-black">Configuración</h3>
+              <div class="mt-3 grid gap-3 sm:grid-cols-2">
+                <label class="text-sm font-bold text-slate-700">
+                  Nombre
+                  <input name="tournamentName" value="${escapeAttribute(settings.tournamentName)}" class="mt-1 min-h-10 w-full rounded-xl border border-slate-300 px-3 text-sm">
+                </label>
+                <label class="text-sm font-bold text-slate-700">
+                  Rondas
+                  <input name="totalRounds" type="number" min="1" value="${settings.totalRounds}" class="mt-1 min-h-10 w-full rounded-xl border border-slate-300 px-3 text-sm">
+                </label>
+                <label class="text-sm font-bold text-slate-700">
+                  Tableros por tanda
+                  <input name="boardsPerBatch" type="number" min="1" max="10" value="${settings.boardsPerBatch}" class="mt-1 min-h-10 w-full rounded-xl border border-slate-300 px-3 text-sm">
+                </label>
+                <label class="mt-7 flex items-center gap-2 text-sm font-black text-slate-700">
+                  <input name="autoPairing" type="checkbox" ${settings.autoPairing ? "checked" : ""} class="h-4 w-4">
+                  Auto emparejar
+                </label>
+              </div>
+              <button class="mt-4 rounded-xl bg-slate-950 px-4 py-3 text-sm font-black text-white">Guardar configuración</button>
+            </form>
+
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 ${adminUnlocked ? "" : "hidden"}">
+              <h3 class="font-black">Backup</h3>
+              <div class="mt-4 flex flex-col gap-2 sm:flex-row">
+                <button id="exportBackup" class="rounded-xl bg-emerald-700 px-4 py-3 text-sm font-black text-white">Exportar JSON</button>
+                <label class="rounded-xl border border-slate-300 bg-white px-4 py-3 text-center text-sm font-black text-slate-800">
+                  Importar JSON
+                  <input id="importBackup" type="file" accept="application/json" class="hidden">
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+      `;
+
+      document.querySelector("#settingsForm")?.addEventListener("submit", async event => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        settings.tournamentName = String(data.get("tournamentName") || settings.tournamentName).trim();
+        settings.totalRounds = positiveNumber(data.get("totalRounds"), settings.totalRounds);
+        settings.boardsPerBatch = positiveNumber(data.get("boardsPerBatch"), settings.boardsPerBatch);
+        settings.autoPairing = data.get("autoPairing") === "on";
+        await saveSettings();
+        await maybeAutoGeneratePairings();
+        render();
+        showToast("Configuración guardada.");
+      });
+
+      document.querySelector("#exportBackup")?.addEventListener("click", exportBackup);
+      document.querySelector("#importBackup")?.addEventListener("change", importBackup);
+    }
+
+    function exportBackup() {
+      const payload = JSON.stringify({ state, settings, exportedAt: new Date().toISOString() }, null, 2);
+      const blob = new Blob([payload], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "uptp-chess-club-backup.json";
+      anchor.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importBackup(event) {
+      const file = event.target.files?.[0];
+      if (!file || !adminUnlocked) return;
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const payload = JSON.parse(reader.result);
+          if (!payload.state || !payload.settings) throw new Error("Invalid backup");
+          state = normalizeState(payload.state);
+          settings = { ...DEFAULT_SETTINGS, ...payload.settings };
+          await saveState();
+          await saveSettings();
+          render();
+          showToast("Backup importado.");
+        } catch {
+          showToast("No se pudo importar el archivo.");
+        }
+      };
+      reader.readAsText(file);
     }
 
     function playerOptions(selectedId) {
@@ -870,186 +1319,13 @@
       `).join("");
     }
 
-    function renderHistoryCard(match) {
-      return `
-        <article class="rounded-lg border border-zinc-200 bg-white p-4" data-history-card="${match.id}">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <div class="text-xs font-bold uppercase tracking-normal text-zinc-500">Ronda ${match.round} · Tanda ${match.batch} · Tablero ${match.board}</div>
-              <div class="mt-1 font-bold">${escapeHtml(playerName(match.whiteId))} <span class="text-zinc-400">vs</span> ${escapeHtml(playerName(match.blackId))}</div>
-              <div class="mt-1 text-sm text-zinc-600">${escapeHtml(resultText(match))}</div>
-            </div>
-            <button class="text-sm font-semibold text-red-700" data-delete-match>Eliminar</button>
-          </div>
-
-          <div class="mt-4 grid gap-2 sm:grid-cols-3">
-            <label class="text-sm">
-              <span class="mb-1 block font-semibold text-zinc-600">Ronda</span>
-              <input data-round type="number" min="1" value="${match.round}" class="min-h-10 w-full rounded-lg border border-zinc-300 px-3">
-            </label>
-            <label class="text-sm">
-              <span class="mb-1 block font-semibold text-zinc-600">Tanda</span>
-              <input data-batch type="number" min="1" value="${match.batch}" class="min-h-10 w-full rounded-lg border border-zinc-300 px-3">
-            </label>
-            <label class="text-sm">
-              <span class="mb-1 block font-semibold text-zinc-600">Tablero</span>
-              <input data-board type="number" min="1" value="${match.board}" class="min-h-10 w-full rounded-lg border border-zinc-300 px-3">
-            </label>
-          </div>
-
-          <div class="mt-3 grid gap-2 md:grid-cols-[1fr_1fr_auto]">
-            <label class="text-sm">
-              <span class="mb-1 block font-semibold text-zinc-600">Blancas</span>
-              <select data-white-player class="min-h-10 w-full rounded-lg border border-zinc-300 bg-white px-3">${playerOptions(match.whiteId)}</select>
-            </label>
-            <label class="text-sm">
-              <span class="mb-1 block font-semibold text-zinc-600">Negras</span>
-              <select data-black-player class="min-h-10 w-full rounded-lg border border-zinc-300 bg-white px-3">${playerOptions(match.blackId)}</select>
-            </label>
-            <button data-swap-colors class="mt-6 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm font-semibold">Intercambiar</button>
-          </div>
-
-          <label class="mt-3 block text-sm">
-            <span class="mb-1 block font-semibold text-zinc-600">Resultado</span>
-            <select data-history-result class="min-h-10 w-full rounded-lg border border-zinc-300 bg-white px-3">
-              <option value="" ${!match.result ? "selected" : ""}>Pendiente</option>
-              <option value="1-0" ${match.result === "1-0" ? "selected" : ""}>1-0 · gana blancas</option>
-              <option value="0-1" ${match.result === "0-1" ? "selected" : ""}>0-1 · gana negras</option>
-              <option value="0.5-0.5" ${match.result === "0.5-0.5" ? "selected" : ""}>0.5-0.5 · tablas</option>
-            </select>
-          </label>
-        </article>
-      `;
-    }
-
-    function renderManualMatchForm(nextRound) {
-      return `
-        <form id="manualMatchForm" class="mt-4 space-y-3">
-          <div class="grid grid-cols-3 gap-2">
-            <label class="text-sm">
-              <span class="mb-1 block font-semibold text-zinc-600">Ronda</span>
-              <input name="round" type="number" min="1" value="${nextRound}" class="min-h-10 w-full rounded-lg border border-zinc-300 px-3">
-            </label>
-            <label class="text-sm">
-              <span class="mb-1 block font-semibold text-zinc-600">Tanda</span>
-              <input name="batch" type="number" min="1" value="1" class="min-h-10 w-full rounded-lg border border-zinc-300 px-3">
-            </label>
-            <label class="text-sm">
-              <span class="mb-1 block font-semibold text-zinc-600">Tablero</span>
-              <input name="board" type="number" min="1" value="1" class="min-h-10 w-full rounded-lg border border-zinc-300 px-3">
-            </label>
-          </div>
-          <label class="block text-sm">
-            <span class="mb-1 block font-semibold text-zinc-600">Blancas</span>
-            <select name="whiteId" class="min-h-10 w-full rounded-lg border border-zinc-300 bg-white px-3">
-              <option value="">Elegir jugador...</option>
-              ${playerOptions("")}
-            </select>
-          </label>
-          <label class="block text-sm">
-            <span class="mb-1 block font-semibold text-zinc-600">Negras</span>
-            <select name="blackId" class="min-h-10 w-full rounded-lg border border-zinc-300 bg-white px-3">
-              <option value="">Elegir jugador...</option>
-              ${playerOptions("")}
-            </select>
-          </label>
-          <label class="block text-sm">
-            <span class="mb-1 block font-semibold text-zinc-600">Resultado</span>
-            <select name="result" class="min-h-10 w-full rounded-lg border border-zinc-300 bg-white px-3">
-              <option value="">Pendiente</option>
-              <option value="1-0">1-0 · gana blancas</option>
-              <option value="0-1">0-1 · gana negras</option>
-              <option value="0.5-0.5">0.5-0.5 · tablas</option>
-            </select>
-          </label>
-          <button class="w-full rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white">Cargar partida</button>
-        </form>
-      `;
-    }
-
-    function renderPlayers() {
-      const stats = calculateStats();
-      const sortedPlayers = [...state.players].sort((a, b) => a.name.localeCompare(b.name, "es"));
-
-      document.querySelector("#view-players").innerHTML = `
-        <div class="grid gap-4 lg:grid-cols-[1fr_340px]">
-          <section>
-            <div>
-              <h2 class="text-lg font-bold">Jugadores</h2>
-              <p class="text-sm text-zinc-600">Editá nombres y marcá quiénes están activos para los próximos emparejamientos.</p>
-            </div>
-            <div class="mt-3 space-y-2">
-              ${sortedPlayers.map(player => renderPlayerRow(player, stats.get(player.id))).join("")}
-            </div>
-          </section>
-
-          <aside class="space-y-4">
-            <div class="rounded-lg border border-zinc-200 bg-white p-4">
-              <h3 class="font-bold">Agregar jugador</h3>
-              <form id="addPlayerForm" class="mt-3 flex gap-2">
-                <input name="name" class="min-h-10 min-w-0 flex-1 rounded-lg border border-zinc-300 px-3 text-sm" placeholder="Nombre completo">
-                <button class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white">Agregar</button>
-              </form>
-            </div>
-            <div class="rounded-lg border border-red-200 bg-white p-4">
-              <h3 class="font-bold text-red-800">Zona de reinicio</h3>
-              <p class="mt-1 text-sm text-zinc-600">Vuelve a los 16 participantes oficiales y las 3 partidas iniciales.</p>
-              <button id="resetTournament" class="mt-3 rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm font-semibold text-red-800">Restablecer datos iniciales</button>
-            </div>
-          </aside>
-        </div>
-      `;
-
-      sortedPlayers.forEach(player => {
-        const row = document.querySelector(`[data-player-row="${player.id}"]`);
-        row?.querySelector(`[data-player-name]`)?.addEventListener("change", event => {
-          const name = event.target.value.trim();
-          if (!name) {
-            showToast("El nombre no puede estar vacío.");
-            render();
-            return;
-          }
-          updatePlayer(player.id, { name });
-        });
-        row?.querySelector(`[data-player-active]`)?.addEventListener("change", event => {
-          updatePlayer(player.id, { active: event.target.checked });
-        });
-        row?.querySelector(`[data-remove-player]`)?.addEventListener("click", () => removeOrDeactivatePlayer(player.id));
-      });
-
-      document.querySelector("#addPlayerForm")?.addEventListener("submit", event => {
-        event.preventDefault();
-        addPlayer(event.currentTarget);
-      });
-      document.querySelector("#resetTournament")?.addEventListener("click", resetTournament);
-    }
-
-    function renderPlayerRow(player, stat) {
-      return `
-        <article class="rounded-lg border border-zinc-200 bg-white p-3" data-player-row="${player.id}">
-          <div class="grid gap-3 md:grid-cols-[1fr_auto_auto] md:items-center">
-            <input data-player-name value="${escapeAttribute(player.name)}" class="min-h-10 w-full rounded-lg border border-zinc-300 px-3 text-sm font-semibold">
-            <label class="flex items-center gap-2 text-sm font-semibold text-zinc-700">
-              <input data-player-active type="checkbox" ${player.active ? "checked" : ""} class="h-4 w-4">
-              Activo
-            </label>
-            <button data-remove-player class="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm font-semibold text-zinc-700">${playerHasMatches(player.id) ? "Desactivar" : "Eliminar"}</button>
-          </div>
-          <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-600">
-            <span>${formatPoints(stat?.points || 0)} pts</span>
-            <span>${stat?.played || 0} partidas</span>
-            <span>${colorBadges(stat?.colors || [])}</span>
-          </div>
-        </article>
-      `;
-    }
-
-    function playerHasMatches(playerId) {
-      return state.matches.some(match => match.whiteId === playerId || match.blackId === playerId);
-    }
-
     function emptyState(message) {
-      return `<div class="rounded-lg border border-dashed border-zinc-300 bg-white p-5 text-sm text-zinc-600">${escapeHtml(message)}</div>`;
+      return `<div class="rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-sm font-bold text-slate-500">${escapeHtml(message)}</div>`;
+    }
+
+    function positiveNumber(value, fallback) {
+      const number = Number(value);
+      return Number.isFinite(number) && number > 0 ? number : fallback;
     }
 
     function escapeHtml(value) {
@@ -1065,35 +1341,128 @@
       return escapeHtml(value).replaceAll("`", "&#096;");
     }
 
+    function showToast(message) {
+      const alerts = document.querySelector("#alerts");
+      const toast = document.createElement("div");
+      toast.className = "surface rounded-xl px-4 py-3 text-sm font-black text-slate-800";
+      toast.textContent = message;
+      alerts.prepend(toast);
+      setTimeout(() => toast.remove(), 4200);
+    }
+
     function renderTabs() {
       document.querySelectorAll(".tab-btn").forEach(button => {
         const active = button.dataset.view === currentView;
         button.classList.toggle("tab-active", active);
         button.classList.toggle("tab-inactive", !active);
       });
-
       document.querySelectorAll(".view").forEach(section => {
         section.classList.toggle("hidden", section.id !== `view-${currentView}`);
+      });
+      document.querySelectorAll(".admin-nav").forEach(button => {
+        button.classList.toggle("hidden", !adminUnlocked);
       });
     }
 
     function render() {
+      if (!adminUnlocked && currentView === "database") currentView = "dashboard";
       renderSummary();
-      renderTabs();
-      renderStandings();
+      renderDashboard();
       renderPairings();
+      renderStandings();
       renderHistory();
       renderPlayers();
+      renderDatabase();
+      renderTabs();
+    }
+
+    function openAdminModal() {
+      const modal = document.querySelector("#adminModal");
+      const hint = document.querySelector("#adminModalHint");
+      const submit = document.querySelector("#adminSubmit");
+      const lockButton = document.querySelector("#adminLockButton");
+
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      document.querySelector("#adminKeyInput").value = "";
+
+      if (adminUnlocked) {
+        hint.textContent = "La sesión administrativa está activa en este navegador.";
+        submit.textContent = "Actualizar clave";
+        lockButton.classList.remove("hidden");
+      } else if (settings.adminHash) {
+        hint.textContent = "Ingresá la clave local para habilitar resultados y edición.";
+        submit.textContent = "Validar";
+        lockButton.classList.add("hidden");
+      } else {
+        hint.textContent = "Primera configuración: esta clave queda guardada como hash local.";
+        submit.textContent = "Crear clave";
+        lockButton.classList.add("hidden");
+      }
+    }
+
+    function closeAdminModal() {
+      const modal = document.querySelector("#adminModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    async function handleAdminForm(event) {
+      event.preventDefault();
+      const key = String(new FormData(event.currentTarget).get("key") || "").trim();
+      if (key.length < 4) return showToast("La clave debe tener al menos 4 caracteres.");
+      const hash = await hashText(key);
+
+      if (!settings.adminHash || adminUnlocked) {
+        settings.adminHash = hash;
+        await saveSettings();
+        adminUnlocked = true;
+        sessionStorage.setItem("uptpAdminUnlocked", "true");
+        closeAdminModal();
+        render();
+        showToast("Administrador activo.");
+        return;
+      }
+
+      if (hash === settings.adminHash) {
+        adminUnlocked = true;
+        sessionStorage.setItem("uptpAdminUnlocked", "true");
+        closeAdminModal();
+        render();
+        showToast("Administrador activo.");
+      } else {
+        showToast("Clave inválida.");
+      }
+    }
+
+    function lockAdmin() {
+      adminUnlocked = false;
+      sessionStorage.removeItem("uptpAdminUnlocked");
+      closeAdminModal();
+      render();
+      showToast("Administrador bloqueado.");
     }
 
     document.querySelectorAll(".tab-btn").forEach(button => {
       button.addEventListener("click", () => {
         currentView = button.dataset.view;
-        renderTabs();
+        render();
       });
     });
 
-    render();
+    document.querySelector("#adminButton").addEventListener("click", openAdminModal);
+    document.querySelector("#closeAdminModal").addEventListener("click", closeAdminModal);
+    document.querySelector("#adminForm").addEventListener("submit", handleAdminForm);
+    document.querySelector("#adminLockButton").addEventListener("click", lockAdmin);
+    document.querySelector("#printButton").addEventListener("click", () => window.print());
+
+    async function init() {
+      await loadData();
+      await maybeAutoGeneratePairings();
+      render();
+    }
+
+    init();
   </script>
 </body>
 </html>
