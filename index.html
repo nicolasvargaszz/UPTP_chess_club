@@ -1,0 +1,1099 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UPTP Chess Club - Torneo Suizo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      color-scheme: light;
+    }
+
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .tab-active {
+      background: #111827;
+      color: #ffffff;
+    }
+
+    .tab-inactive {
+      background: #ffffff;
+      color: #3f3f46;
+      border-color: #d4d4d8;
+    }
+
+    .brand-mark svg {
+      display: block;
+      height: 46px;
+      width: 46px;
+    }
+
+    .scroll-shadow {
+      background:
+        linear-gradient(90deg, #fafafa 30%, rgba(250, 250, 250, 0)),
+        linear-gradient(90deg, rgba(250, 250, 250, 0), #fafafa 70%) 100% 0,
+        linear-gradient(90deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0)),
+        linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.08)) 100% 0;
+      background-repeat: no-repeat;
+      background-size: 24px 100%, 24px 100%, 12px 100%, 12px 100%;
+      background-attachment: local, local, scroll, scroll;
+    }
+
+    @media (max-width: 520px) {
+      .mobile-tight {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body class="bg-zinc-100 text-zinc-950">
+  <div class="min-h-screen">
+    <header class="border-b border-zinc-200 bg-white">
+      <div class="mx-auto flex max-w-6xl items-center gap-3 px-4 py-4 mobile-tight">
+        <div class="brand-mark shrink-0" aria-hidden="true">
+          <svg viewBox="0 0 64 64" role="img">
+            <path d="M23 56h18l-2-10h-14l-2 10Z" fill="#14516d"/>
+            <path d="M24 46h16l-3-18h-10l-3 18Z" fill="#14516d"/>
+            <path d="M22 28h20v-8h-5v4h-4v-4h-4v4h-4v-4h-3v8Z" fill="#14516d"/>
+            <path d="M32 4c8 10-1 13 8 23-10-2-16-8-8-23Z" fill="#d64032"/>
+            <path d="M25 11c-6 9-5 16 4 20-2-7 5-9-4-20Z" fill="#f06f43"/>
+            <path d="M41 10c7 8 6 16-2 21 1-8-7-10 2-21Z" fill="#c5232c"/>
+          </svg>
+        </div>
+        <div class="min-w-0">
+          <h1 class="truncate text-xl font-bold tracking-normal sm:text-2xl">UPTP Chess Club</h1>
+          <p class="text-sm text-zinc-600">Torneo suizo 5+0 · 3 tableros · izquierda blancas, derecha negras</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-6xl px-4 py-5 mobile-tight">
+      <section class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" id="summary"></section>
+
+      <nav class="mt-5 flex flex-wrap gap-2" aria-label="Vistas">
+        <button class="tab-btn rounded-lg border px-3 py-2 text-sm font-semibold" data-view="standings">Posiciones</button>
+        <button class="tab-btn rounded-lg border px-3 py-2 text-sm font-semibold" data-view="pairings">Próximas partidas</button>
+        <button class="tab-btn rounded-lg border px-3 py-2 text-sm font-semibold" data-view="history">Historial</button>
+        <button class="tab-btn rounded-lg border px-3 py-2 text-sm font-semibold" data-view="players">Jugadores</button>
+      </nav>
+
+      <section id="alerts" class="mt-4 space-y-2"></section>
+
+      <section id="view-standings" class="view mt-4"></section>
+      <section id="view-pairings" class="view mt-4 hidden"></section>
+      <section id="view-history" class="view mt-4 hidden"></section>
+      <section id="view-players" class="view mt-4 hidden"></section>
+    </main>
+  </div>
+
+  <template id="emptyStateTemplate">
+    <div class="rounded-lg border border-dashed border-zinc-300 bg-white p-5 text-sm text-zinc-600"></div>
+  </template>
+
+  <script>
+    const STORAGE_KEY = "uptpSwissTournamentState.v1";
+    const BOARDS_PER_BATCH = 3;
+
+    const OFFICIAL_PLAYERS = [
+      "Camila Rivas",
+      "José Alejandro Costa Garrigoza",
+      "Santiago Gamarra",
+      "Bruno Tobias Gonzalez Mora",
+      "David Nicolás Bareiro Pereira",
+      "Fabrizio Matias Castro Gamarra",
+      "Maximiliano Ferloni",
+      "Nicolás Vargas",
+      "Oscar Martín Barrios Brizuela",
+      "Matias Canela",
+      "Yanina Del Carmen Vera Benitez",
+      "Sara Ltaif Fischer",
+      "Diego Barrios",
+      "Saúl Rojas",
+      "Ian Gibbons",
+      "Nico Segovia"
+    ];
+
+    const INITIAL_RESULTS = [
+      {
+        id: "m-inicial-1",
+        round: 1,
+        batch: 1,
+        board: 1,
+        whiteId: "p8",
+        blackId: "p14",
+        result: "0-1",
+        createdAt: "2026-05-25T00:00:01.000Z"
+      },
+      {
+        id: "m-inicial-2",
+        round: 1,
+        batch: 1,
+        board: 2,
+        whiteId: "p2",
+        blackId: "p11",
+        result: "1-0",
+        createdAt: "2026-05-25T00:00:02.000Z"
+      },
+      {
+        id: "m-inicial-3",
+        round: 1,
+        batch: 1,
+        board: 3,
+        whiteId: "p3",
+        blackId: "p16",
+        result: "0-1",
+        createdAt: "2026-05-25T00:00:03.000Z"
+      }
+    ];
+
+    let state = loadState();
+    let currentView = "standings";
+
+    function createInitialState() {
+      return {
+        version: 1,
+        players: OFFICIAL_PLAYERS.map((name, index) => ({
+          id: `p${index + 1}`,
+          name,
+          active: true
+        })),
+        matches: structuredClone(INITIAL_RESULTS)
+      };
+    }
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return createInitialState();
+        const parsed = JSON.parse(saved);
+        if (!parsed || !Array.isArray(parsed.players) || !Array.isArray(parsed.matches)) {
+          return createInitialState();
+        }
+        return parsed;
+      } catch {
+        return createInitialState();
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function getPlayer(id) {
+      return state.players.find(player => player.id === id);
+    }
+
+    function playerName(id) {
+      return getPlayer(id)?.name || "Jugador eliminado";
+    }
+
+    function completedMatches() {
+      return state.matches.filter(match => match.result);
+    }
+
+    function sortedMatches(matches = state.matches) {
+      return [...matches].sort((a, b) =>
+        a.round - b.round ||
+        a.batch - b.batch ||
+        a.board - b.board ||
+        String(a.createdAt).localeCompare(String(b.createdAt))
+      );
+    }
+
+    function scoreFromResult(match, playerId) {
+      if (!match.result) return 0;
+      if (match.result === "1-0") return match.whiteId === playerId ? 1 : 0;
+      if (match.result === "0-1") return match.blackId === playerId ? 1 : 0;
+      if (match.result === "0.5-0.5") return 0.5;
+      return 0;
+    }
+
+    function calculateStats() {
+      const stats = new Map();
+
+      state.players.forEach(player => {
+        stats.set(player.id, {
+          player,
+          points: 0,
+          buchholz: 0,
+          played: 0,
+          colors: [],
+          rivals: [],
+          rivalIds: new Set(),
+          whiteCount: 0,
+          blackCount: 0
+        });
+      });
+
+      for (const match of sortedMatches()) {
+        const white = stats.get(match.whiteId);
+        const black = stats.get(match.blackId);
+        if (!white || !black) continue;
+
+        // El historial de colores cuenta partidas programadas y terminadas.
+        white.colors.push("B");
+        black.colors.push("N");
+        white.whiteCount += 1;
+        black.blackCount += 1;
+        white.rivalIds.add(match.blackId);
+        black.rivalIds.add(match.whiteId);
+
+        if (match.result) {
+          white.points += scoreFromResult(match, match.whiteId);
+          black.points += scoreFromResult(match, match.blackId);
+          white.played += 1;
+          black.played += 1;
+          white.rivals.push(match.blackId);
+          black.rivals.push(match.whiteId);
+        }
+      }
+
+      for (const item of stats.values()) {
+        item.buchholz = item.rivals.reduce((sum, rivalId) => {
+          return sum + (stats.get(rivalId)?.points || 0);
+        }, 0);
+      }
+
+      return stats;
+    }
+
+    function standings() {
+      return [...calculateStats().values()].sort((a, b) =>
+        b.points - a.points ||
+        b.buchholz - a.buchholz ||
+        b.played - a.played ||
+        a.player.name.localeCompare(b.player.name, "es")
+      );
+    }
+
+    function activePlayers() {
+      return state.players.filter(player => player.active);
+    }
+
+    function pendingMatches() {
+      return sortedMatches(state.matches.filter(match => !match.result));
+    }
+
+    function hasPlayedEachOther(idA, idB) {
+      return state.matches.some(match =>
+        (match.whiteId === idA && match.blackId === idB) ||
+        (match.whiteId === idB && match.blackId === idA)
+      );
+    }
+
+    function lastColors(stat, amount) {
+      return stat.colors.slice(-amount);
+    }
+
+    function colorPenalty(stat, color) {
+      const whiteAfter = stat.whiteCount + (color === "B" ? 1 : 0);
+      const blackAfter = stat.blackCount + (color === "N" ? 1 : 0);
+      const balancePenalty = Math.abs(whiteAfter - blackAfter);
+      const last = lastColors(stat, 1)[0];
+      const lastTwo = lastColors(stat, 2);
+      let streakPenalty = 0;
+
+      if (last === color) streakPenalty += 3;
+      if (lastTwo.length === 2 && lastTwo.every(item => item === color)) streakPenalty += 12;
+
+      return balancePenalty + streakPenalty;
+    }
+
+    function orientPair(idA, idB, stats) {
+      const a = stats.get(idA);
+      const b = stats.get(idB);
+      const aWhiteCost = colorPenalty(a, "B") + colorPenalty(b, "N");
+      const bWhiteCost = colorPenalty(a, "N") + colorPenalty(b, "B");
+
+      if (aWhiteCost < bWhiteCost) {
+        return { whiteId: idA, blackId: idB, colorCost: aWhiteCost };
+      }
+      if (bWhiteCost < aWhiteCost) {
+        return { whiteId: idB, blackId: idA, colorCost: bWhiteCost };
+      }
+
+      // Empate estable: alterna de forma predecible por nombre.
+      return playerName(idA).localeCompare(playerName(idB), "es") <= 0
+        ? { whiteId: idA, blackId: idB, colorCost: aWhiteCost }
+        : { whiteId: idB, blackId: idA, colorCost: bWhiteCost };
+    }
+
+    function pairCost(idA, idB, stats) {
+      const a = stats.get(idA);
+      const b = stats.get(idB);
+      const repeatedPenalty = hasPlayedEachOther(idA, idB) ? 1_000_000 : 0;
+      const scorePenalty = Math.abs(a.points - b.points) * 10_000;
+      const colorCost = orientPair(idA, idB, stats).colorCost * 100;
+      const playedPenalty = Math.abs(a.played - b.played) * 10;
+      return repeatedPenalty + scorePenalty + colorCost + playedPenalty;
+    }
+
+    function generateOptimalPairs(playerIds) {
+      const stats = calculateStats();
+      const ordered = [...playerIds].sort((idA, idB) => {
+        const a = stats.get(idA);
+        const b = stats.get(idB);
+        return b.points - a.points ||
+          b.buchholz - a.buchholz ||
+          a.player.name.localeCompare(b.player.name, "es");
+      });
+      const memo = new Map();
+
+      function solve(remaining) {
+        const key = remaining.join("|");
+        if (memo.has(key)) return memo.get(key);
+        if (remaining.length === 0) return { cost: 0, pairs: [] };
+
+        const first = remaining[0];
+        let best = { cost: Number.POSITIVE_INFINITY, pairs: [] };
+        const candidates = remaining.slice(1).sort((idA, idB) =>
+          pairCost(first, idA, stats) - pairCost(first, idB, stats)
+        );
+
+        for (const candidate of candidates) {
+          const rest = remaining.filter(id => id !== first && id !== candidate);
+          const solved = solve(rest);
+          const thisCost = pairCost(first, candidate, stats) + solved.cost;
+          if (thisCost < best.cost) {
+            best = {
+              cost: thisCost,
+              pairs: [orientPair(first, candidate, stats), ...solved.pairs]
+            };
+          }
+        }
+
+        memo.set(key, best);
+        return best;
+      }
+
+      return solve(ordered).pairs;
+    }
+
+    function getGenerationContext() {
+      const activeIds = activePlayers().map(player => player.id);
+      const expectedMatches = activeIds.length / 2;
+      const maxRound = state.matches.reduce((max, match) => Math.max(max, match.round || 1), 1);
+      const matchesInMaxRound = state.matches.filter(match => match.round === maxRound);
+      const currentRoundIsIncomplete = matchesInMaxRound.length > 0 && matchesInMaxRound.length < expectedMatches;
+
+      if (currentRoundIsIncomplete) {
+        const alreadyScheduled = new Set();
+        matchesInMaxRound.forEach(match => {
+          alreadyScheduled.add(match.whiteId);
+          alreadyScheduled.add(match.blackId);
+        });
+
+        return {
+          round: maxRound,
+          existingMatchesInRound: matchesInMaxRound.length,
+          playerIds: activeIds.filter(id => !alreadyScheduled.has(id)),
+          mode: "complete-current"
+        };
+      }
+
+      return {
+        round: state.matches.length ? maxRound + 1 : 1,
+        existingMatchesInRound: 0,
+        playerIds: activeIds,
+        mode: "new-round"
+      };
+    }
+
+    function generatePairings() {
+      const pending = pendingMatches();
+      if (pending.length > 0) {
+        showToast("Primero cargá o eliminá las partidas pendientes antes de generar nuevas.");
+        return;
+      }
+
+      const context = getGenerationContext();
+      if (context.playerIds.length < 2) {
+        showToast("No hay suficientes jugadores disponibles para generar partidas.");
+        return;
+      }
+
+      if (context.playerIds.length % 2 !== 0) {
+        showToast("Hay una cantidad impar de jugadores activos. Desactivá o agregá un jugador para evitar bye.");
+        return;
+      }
+
+      const pairs = generateOptimalPairs(context.playerIds);
+      const newMatches = pairs.map((pair, index) => {
+        const matchIndex = context.existingMatchesInRound + index;
+        return {
+          id: `m-${Date.now()}-${index}-${Math.random().toString(36).slice(2, 8)}`,
+          round: context.round,
+          batch: Math.floor(matchIndex / BOARDS_PER_BATCH) + 1,
+          board: (matchIndex % BOARDS_PER_BATCH) + 1,
+          whiteId: pair.whiteId,
+          blackId: pair.blackId,
+          result: "",
+          createdAt: new Date().toISOString()
+        };
+      });
+
+      state.matches.push(...newMatches);
+      saveState();
+      currentView = "pairings";
+      render();
+
+      const action = context.mode === "complete-current" ? "completó la ronda actual" : "generó una ronda nueva";
+      showToast(`Se ${action}: ${newMatches.length} partidas en tandas de hasta 3 tableros.`);
+    }
+
+    function resultLabel(result) {
+      if (result === "1-0") return "1-0";
+      if (result === "0-1") return "0-1";
+      if (result === "0.5-0.5") return "0.5-0.5";
+      return "Pendiente";
+    }
+
+    function resultText(match) {
+      if (match.result === "1-0") return `Ganó ${playerName(match.whiteId)}`;
+      if (match.result === "0-1") return `Ganó ${playerName(match.blackId)}`;
+      if (match.result === "0.5-0.5") return "Tablas";
+      return "Pendiente";
+    }
+
+    function setMatchResult(matchId, result) {
+      const match = state.matches.find(item => item.id === matchId);
+      if (!match) return;
+      match.result = result;
+      saveState();
+      render();
+    }
+
+    function updateMatch(matchId, updates) {
+      const match = state.matches.find(item => item.id === matchId);
+      if (!match) return;
+      Object.assign(match, updates);
+      saveState();
+      render();
+    }
+
+    function deleteMatch(matchId) {
+      const match = state.matches.find(item => item.id === matchId);
+      if (!match) return;
+      const confirmed = confirm(`¿Eliminar la partida ${playerName(match.whiteId)} vs ${playerName(match.blackId)}?`);
+      if (!confirmed) return;
+      state.matches = state.matches.filter(item => item.id !== matchId);
+      saveState();
+      render();
+    }
+
+    function addManualMatch(form) {
+      const formData = new FormData(form);
+      const whiteId = formData.get("whiteId");
+      const blackId = formData.get("blackId");
+      const result = formData.get("result");
+      const round = Number(formData.get("round"));
+      const batch = Number(formData.get("batch"));
+      const board = Number(formData.get("board"));
+
+      if (!whiteId || !blackId || whiteId === blackId) {
+        showToast("Elegí dos jugadores distintos.");
+        return;
+      }
+
+      state.matches.push({
+        id: `m-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        round: Number.isFinite(round) && round > 0 ? round : 1,
+        batch: Number.isFinite(batch) && batch > 0 ? batch : 1,
+        board: Number.isFinite(board) && board > 0 ? board : 1,
+        whiteId,
+        blackId,
+        result,
+        createdAt: new Date().toISOString()
+      });
+
+      saveState();
+      form.reset();
+      render();
+      showToast("Partida cargada.");
+    }
+
+    function updatePlayer(playerId, updates) {
+      const player = getPlayer(playerId);
+      if (!player) return;
+      Object.assign(player, updates);
+      saveState();
+      render();
+    }
+
+    function addPlayer(form) {
+      const formData = new FormData(form);
+      const name = String(formData.get("name") || "").trim();
+      if (!name) {
+        showToast("Escribí el nombre del jugador.");
+        return;
+      }
+
+      state.players.push({
+        id: `p-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        name,
+        active: true
+      });
+      saveState();
+      form.reset();
+      render();
+      showToast("Jugador agregado.");
+    }
+
+    function removeOrDeactivatePlayer(playerId) {
+      const hasMatches = state.matches.some(match => match.whiteId === playerId || match.blackId === playerId);
+      if (hasMatches) {
+        updatePlayer(playerId, { active: false });
+        showToast("El jugador tiene historial, por eso quedó inactivo en vez de eliminarse.");
+        return;
+      }
+
+      state.players = state.players.filter(player => player.id !== playerId);
+      saveState();
+      render();
+    }
+
+    function resetTournament() {
+      const confirmed = confirm("¿Restablecer participantes y resultados iniciales? Se borrarán los cambios guardados.");
+      if (!confirmed) return;
+      state = createInitialState();
+      saveState();
+      currentView = "standings";
+      render();
+      showToast("Datos iniciales restablecidos.");
+    }
+
+    function showToast(message) {
+      const alerts = document.querySelector("#alerts");
+      const node = document.createElement("div");
+      node.className = "rounded-lg border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-zinc-800 shadow-sm";
+      node.textContent = message;
+      alerts.prepend(node);
+      setTimeout(() => node.remove(), 4200);
+    }
+
+    function renderSummary() {
+      const stats = calculateStats();
+      const activeCount = activePlayers().length;
+      const completed = completedMatches().length;
+      const pending = pendingMatches().length;
+      const maxRound = state.matches.reduce((max, match) => Math.max(max, match.round || 1), 1);
+      const leaderPoints = standings()[0]?.points || 0;
+
+      const cards = [
+        { label: "Participantes activos", value: activeCount, detail: activeCount % 2 === 0 ? "Sin bye en condiciones normales" : "Cantidad impar" },
+        { label: "Ronda actual", value: maxRound, detail: `${Math.ceil(activeCount / 2)} partidas por ronda completa` },
+        { label: "Partidas terminadas", value: completed, detail: `${pending} pendientes` },
+        { label: "Punta del torneo", value: formatPoints(leaderPoints), detail: leaderNames(stats, leaderPoints) }
+      ];
+
+      document.querySelector("#summary").innerHTML = cards.map(card => `
+        <article class="rounded-lg border border-zinc-200 bg-white p-4">
+          <p class="text-xs font-semibold uppercase tracking-normal text-zinc-500">${card.label}</p>
+          <p class="mt-1 text-2xl font-bold text-zinc-950">${card.value}</p>
+          <p class="mt-1 truncate text-sm text-zinc-600">${escapeHtml(card.detail)}</p>
+        </article>
+      `).join("");
+    }
+
+    function leaderNames(stats, points) {
+      const leaders = [...stats.values()]
+        .filter(item => item.points === points)
+        .map(item => item.player.name)
+        .slice(0, 2);
+      return leaders.join(", ") || "Sin datos";
+    }
+
+    function formatPoints(value) {
+      return Number.isInteger(value) ? String(value) : value.toFixed(1);
+    }
+
+    function colorBadges(colors) {
+      if (!colors.length) return `<span class="text-zinc-400">Sin colores</span>`;
+      return colors.map(color => {
+        const label = color === "B" ? "Blancas" : "Negras";
+        const classes = color === "B"
+          ? "border-zinc-300 bg-white text-zinc-900"
+          : "border-zinc-900 bg-zinc-900 text-white";
+        return `<span class="inline-flex h-6 min-w-6 items-center justify-center rounded border px-1.5 text-xs font-bold ${classes}" title="${label}">${color}</span>`;
+      }).join(" ");
+    }
+
+    function renderStandings() {
+      const rows = standings();
+      const stats = calculateStats();
+      document.querySelector("#view-standings").innerHTML = `
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 class="text-lg font-bold">Tabla de posiciones</h2>
+            <p class="text-sm text-zinc-600">Ordenada por puntos, Buchholz simple y partidas jugadas.</p>
+          </div>
+          <button id="generateFromStandings" class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white">Generar próximas partidas</button>
+        </div>
+
+        <div class="scroll-shadow mt-3 overflow-x-auto rounded-lg border border-zinc-200 bg-white">
+          <table class="min-w-[920px] w-full text-left text-sm">
+            <thead class="border-b border-zinc-200 bg-zinc-50 text-xs uppercase tracking-normal text-zinc-500">
+              <tr>
+                <th class="px-3 py-3">Pos</th>
+                <th class="px-3 py-3">Jugador</th>
+                <th class="px-3 py-3">Puntos</th>
+                <th class="px-3 py-3">Buchholz</th>
+                <th class="px-3 py-3">PJ</th>
+                <th class="px-3 py-3">Colores</th>
+                <th class="px-3 py-3">Rivales</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-zinc-100">
+              ${rows.map((row, index) => {
+                const rivals = row.rivals.map(id => playerName(id)).join(", ");
+                return `
+                  <tr class="${row.player.active ? "" : "bg-zinc-50 text-zinc-400"}">
+                    <td class="px-3 py-3 font-semibold">${index + 1}</td>
+                    <td class="px-3 py-3">
+                      <div class="font-semibold">${escapeHtml(row.player.name)}</div>
+                      ${row.player.active ? "" : `<div class="text-xs text-zinc-400">Inactivo</div>`}
+                    </td>
+                    <td class="px-3 py-3 font-bold">${formatPoints(row.points)}</td>
+                    <td class="px-3 py-3">${formatPoints(row.buchholz)}</td>
+                    <td class="px-3 py-3">${row.played}</td>
+                    <td class="px-3 py-3 whitespace-nowrap">${colorBadges(row.colors)}</td>
+                    <td class="px-3 py-3 text-zinc-600">${escapeHtml(rivals || "Sin rivales")}</td>
+                  </tr>
+                `;
+              }).join("")}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-4 grid gap-3 md:grid-cols-2">
+          ${renderTieBreakHelp(stats)}
+          ${renderRoundStatus()}
+        </div>
+      `;
+
+      document.querySelector("#generateFromStandings").addEventListener("click", generatePairings);
+    }
+
+    function renderTieBreakHelp(stats) {
+      const completed = completedMatches().length;
+      const totalBuchholz = [...stats.values()].reduce((sum, item) => sum + item.buchholz, 0);
+      return `
+        <article class="rounded-lg border border-zinc-200 bg-white p-4">
+          <h3 class="font-bold">Buchholz simple</h3>
+          <p class="mt-1 text-sm text-zinc-600">Cada jugador suma los puntos actuales de sus rivales ya enfrentados.</p>
+          <p class="mt-3 text-sm text-zinc-700"><span class="font-semibold">${completed}</span> partidas terminadas · acumulado del desempate: <span class="font-semibold">${formatPoints(totalBuchholz)}</span></p>
+        </article>
+      `;
+    }
+
+    function renderRoundStatus() {
+      const context = getGenerationContext();
+      const text = context.mode === "complete-current"
+        ? `La próxima generación completa la ronda ${context.round} con ${context.playerIds.length / 2} partidas.`
+        : `La próxima generación crea la ronda ${context.round} con ${context.playerIds.length / 2} partidas.`;
+      return `
+        <article class="rounded-lg border border-zinc-200 bg-white p-4">
+          <h3 class="font-bold">Estado de emparejamientos</h3>
+          <p class="mt-1 text-sm text-zinc-600">${text}</p>
+          <p class="mt-3 text-sm text-zinc-700">Las tandas se reparten automáticamente en bloques de máximo ${BOARDS_PER_BATCH} tableros.</p>
+        </article>
+      `;
+    }
+
+    function renderPairings() {
+      const pending = pendingMatches();
+      const grouped = groupByRoundAndBatch(pending);
+
+      document.querySelector("#view-pairings").innerHTML = `
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 class="text-lg font-bold">Próximas partidas</h2>
+            <p class="text-sm text-zinc-600">La columna izquierda juega con blancas; la derecha con negras.</p>
+          </div>
+          <button id="generatePairings" class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white">Generar próximas partidas</button>
+        </div>
+
+        <div class="mt-3 space-y-4">
+          ${pending.length ? renderGroupedPending(grouped) : emptyState("No hay partidas pendientes. Generá la siguiente tanda o ronda cuando quieras continuar.")}
+        </div>
+      `;
+
+      document.querySelector("#generatePairings").addEventListener("click", generatePairings);
+      pending.forEach(match => {
+        const form = document.querySelector(`[data-result-form="${match.id}"]`);
+        form?.addEventListener("submit", event => {
+          event.preventDefault();
+          const result = new FormData(form).get("result");
+          if (!result) {
+            showToast("Elegí un resultado antes de cargar.");
+            return;
+          }
+          setMatchResult(match.id, result);
+          showToast("Resultado cargado.");
+        });
+        document.querySelector(`[data-delete-match="${match.id}"]`)?.addEventListener("click", () => {
+          deleteMatch(match.id);
+        });
+      });
+    }
+
+    function groupByRoundAndBatch(matches) {
+      const groups = new Map();
+      for (const match of matches) {
+        const key = `Ronda ${match.round} · Tanda ${match.batch}`;
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(match);
+      }
+      return [...groups.entries()];
+    }
+
+    function renderGroupedPending(groups) {
+      return groups.map(([title, matches]) => `
+        <section>
+          <h3 class="mb-2 text-sm font-bold uppercase tracking-normal text-zinc-500">${title}</h3>
+          <div class="grid gap-3 lg:grid-cols-2">
+            ${matches.map(renderPendingCard).join("")}
+          </div>
+        </section>
+      `).join("");
+    }
+
+    function renderPendingCard(match) {
+      return `
+        <article class="rounded-lg border border-zinc-200 bg-white p-4">
+          <div class="mb-3 flex items-center justify-between gap-3">
+            <div class="text-sm font-semibold text-zinc-600">Tablero ${match.board}</div>
+            <button class="text-sm font-semibold text-red-700" data-delete-match="${match.id}">Eliminar</button>
+          </div>
+          <div class="grid grid-cols-[1fr_auto_1fr] items-stretch gap-2">
+            <div class="rounded-lg border border-zinc-200 bg-zinc-50 p-3">
+              <div class="text-xs font-semibold uppercase tracking-normal text-zinc-500">Blancas</div>
+              <div class="mt-1 font-bold">${escapeHtml(playerName(match.whiteId))}</div>
+            </div>
+            <div class="flex items-center text-sm font-bold text-zinc-400">vs</div>
+            <div class="rounded-lg border border-zinc-900 bg-zinc-900 p-3 text-white">
+              <div class="text-xs font-semibold uppercase tracking-normal text-zinc-300">Negras</div>
+              <div class="mt-1 font-bold">${escapeHtml(playerName(match.blackId))}</div>
+            </div>
+          </div>
+          <form class="mt-3 flex flex-col gap-2 sm:flex-row" data-result-form="${match.id}">
+            <select name="result" class="min-h-10 flex-1 rounded-lg border border-zinc-300 bg-white px-3 text-sm">
+              <option value="">Resultado...</option>
+              <option value="1-0">1-0 · gana blancas</option>
+              <option value="0-1">0-1 · gana negras</option>
+              <option value="0.5-0.5">0.5-0.5 · tablas</option>
+            </select>
+            <button class="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white">Cargar</button>
+          </form>
+        </article>
+      `;
+    }
+
+    function renderHistory() {
+      const matches = sortedMatches();
+      const nextRound = state.matches.reduce((max, match) => Math.max(max, match.round || 1), 1);
+
+      document.querySelector("#view-history").innerHTML = `
+        <div class="grid gap-4 lg:grid-cols-[1fr_360px]">
+          <section>
+            <div>
+              <h2 class="text-lg font-bold">Historial de partidas</h2>
+              <p class="text-sm text-zinc-600">Podés corregir resultado, colores, ubicación o eliminar una partida cargada por error.</p>
+            </div>
+            <div class="mt-3 space-y-3">
+              ${matches.length ? matches.map(renderHistoryCard).join("") : emptyState("Todavía no hay partidas cargadas.")}
+            </div>
+          </section>
+
+          <aside class="rounded-lg border border-zinc-200 bg-white p-4">
+            <h3 class="font-bold">Cargar partida manual</h3>
+            <p class="mt-1 text-sm text-zinc-600">Usá esto para registrar una partida que no fue generada automáticamente.</p>
+            ${renderManualMatchForm(nextRound)}
+          </aside>
+        </div>
+      `;
+
+      matches.forEach(match => {
+        const card = document.querySelector(`[data-history-card="${match.id}"]`);
+        card?.querySelector(`[data-history-result]`)?.addEventListener("change", event => {
+          setMatchResult(match.id, event.target.value);
+        });
+        card?.querySelector(`[data-swap-colors]`)?.addEventListener("click", () => {
+          updateMatch(match.id, { whiteId: match.blackId, blackId: match.whiteId });
+        });
+        card?.querySelector(`[data-delete-match]`)?.addEventListener("click", () => deleteMatch(match.id));
+        card?.querySelector(`[data-round]`)?.addEventListener("change", event => {
+          updateMatch(match.id, { round: positiveNumber(event.target.value, match.round) });
+        });
+        card?.querySelector(`[data-batch]`)?.addEventListener("change", event => {
+          updateMatch(match.id, { batch: positiveNumber(event.target.value, match.batch) });
+        });
+        card?.querySelector(`[data-board]`)?.addEventListener("change", event => {
+          updateMatch(match.id, { board: positiveNumber(event.target.value, match.board) });
+        });
+        card?.querySelector(`[data-white-player]`)?.addEventListener("change", event => {
+          if (event.target.value === match.blackId) {
+            showToast("Blancas y negras deben ser jugadores distintos.");
+            render();
+            return;
+          }
+          updateMatch(match.id, { whiteId: event.target.value });
+        });
+        card?.querySelector(`[data-black-player]`)?.addEventListener("change", event => {
+          if (event.target.value === match.whiteId) {
+            showToast("Blancas y negras deben ser jugadores distintos.");
+            render();
+            return;
+          }
+          updateMatch(match.id, { blackId: event.target.value });
+        });
+      });
+
+      document.querySelector("#manualMatchForm")?.addEventListener("submit", event => {
+        event.preventDefault();
+        addManualMatch(event.currentTarget);
+      });
+    }
+
+    function positiveNumber(value, fallback) {
+      const number = Number(value);
+      return Number.isFinite(number) && number > 0 ? number : fallback;
+    }
+
+    function playerOptions(selectedId) {
+      return state.players.map(player => `
+        <option value="${player.id}" ${player.id === selectedId ? "selected" : ""}>${escapeHtml(player.name)}</option>
+      `).join("");
+    }
+
+    function renderHistoryCard(match) {
+      return `
+        <article class="rounded-lg border border-zinc-200 bg-white p-4" data-history-card="${match.id}">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-normal text-zinc-500">Ronda ${match.round} · Tanda ${match.batch} · Tablero ${match.board}</div>
+              <div class="mt-1 font-bold">${escapeHtml(playerName(match.whiteId))} <span class="text-zinc-400">vs</span> ${escapeHtml(playerName(match.blackId))}</div>
+              <div class="mt-1 text-sm text-zinc-600">${escapeHtml(resultText(match))}</div>
+            </div>
+            <button class="text-sm font-semibold text-red-700" data-delete-match>Eliminar</button>
+          </div>
+
+          <div class="mt-4 grid gap-2 sm:grid-cols-3">
+            <label class="text-sm">
+              <span class="mb-1 block font-semibold text-zinc-600">Ronda</span>
+              <input data-round type="number" min="1" value="${match.round}" class="min-h-10 w-full rounded-lg border border-zinc-300 px-3">
+            </label>
+            <label class="text-sm">
+              <span class="mb-1 block font-semibold text-zinc-600">Tanda</span>
+              <input data-batch type="number" min="1" value="${match.batch}" class="min-h-10 w-full rounded-lg border border-zinc-300 px-3">
+            </label>
+            <label class="text-sm">
+              <span class="mb-1 block font-semibold text-zinc-600">Tablero</span>
+              <input data-board type="number" min="1" value="${match.board}" class="min-h-10 w-full rounded-lg border border-zinc-300 px-3">
+            </label>
+          </div>
+
+          <div class="mt-3 grid gap-2 md:grid-cols-[1fr_1fr_auto]">
+            <label class="text-sm">
+              <span class="mb-1 block font-semibold text-zinc-600">Blancas</span>
+              <select data-white-player class="min-h-10 w-full rounded-lg border border-zinc-300 bg-white px-3">${playerOptions(match.whiteId)}</select>
+            </label>
+            <label class="text-sm">
+              <span class="mb-1 block font-semibold text-zinc-600">Negras</span>
+              <select data-black-player class="min-h-10 w-full rounded-lg border border-zinc-300 bg-white px-3">${playerOptions(match.blackId)}</select>
+            </label>
+            <button data-swap-colors class="mt-6 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm font-semibold">Intercambiar</button>
+          </div>
+
+          <label class="mt-3 block text-sm">
+            <span class="mb-1 block font-semibold text-zinc-600">Resultado</span>
+            <select data-history-result class="min-h-10 w-full rounded-lg border border-zinc-300 bg-white px-3">
+              <option value="" ${!match.result ? "selected" : ""}>Pendiente</option>
+              <option value="1-0" ${match.result === "1-0" ? "selected" : ""}>1-0 · gana blancas</option>
+              <option value="0-1" ${match.result === "0-1" ? "selected" : ""}>0-1 · gana negras</option>
+              <option value="0.5-0.5" ${match.result === "0.5-0.5" ? "selected" : ""}>0.5-0.5 · tablas</option>
+            </select>
+          </label>
+        </article>
+      `;
+    }
+
+    function renderManualMatchForm(nextRound) {
+      return `
+        <form id="manualMatchForm" class="mt-4 space-y-3">
+          <div class="grid grid-cols-3 gap-2">
+            <label class="text-sm">
+              <span class="mb-1 block font-semibold text-zinc-600">Ronda</span>
+              <input name="round" type="number" min="1" value="${nextRound}" class="min-h-10 w-full rounded-lg border border-zinc-300 px-3">
+            </label>
+            <label class="text-sm">
+              <span class="mb-1 block font-semibold text-zinc-600">Tanda</span>
+              <input name="batch" type="number" min="1" value="1" class="min-h-10 w-full rounded-lg border border-zinc-300 px-3">
+            </label>
+            <label class="text-sm">
+              <span class="mb-1 block font-semibold text-zinc-600">Tablero</span>
+              <input name="board" type="number" min="1" value="1" class="min-h-10 w-full rounded-lg border border-zinc-300 px-3">
+            </label>
+          </div>
+          <label class="block text-sm">
+            <span class="mb-1 block font-semibold text-zinc-600">Blancas</span>
+            <select name="whiteId" class="min-h-10 w-full rounded-lg border border-zinc-300 bg-white px-3">
+              <option value="">Elegir jugador...</option>
+              ${playerOptions("")}
+            </select>
+          </label>
+          <label class="block text-sm">
+            <span class="mb-1 block font-semibold text-zinc-600">Negras</span>
+            <select name="blackId" class="min-h-10 w-full rounded-lg border border-zinc-300 bg-white px-3">
+              <option value="">Elegir jugador...</option>
+              ${playerOptions("")}
+            </select>
+          </label>
+          <label class="block text-sm">
+            <span class="mb-1 block font-semibold text-zinc-600">Resultado</span>
+            <select name="result" class="min-h-10 w-full rounded-lg border border-zinc-300 bg-white px-3">
+              <option value="">Pendiente</option>
+              <option value="1-0">1-0 · gana blancas</option>
+              <option value="0-1">0-1 · gana negras</option>
+              <option value="0.5-0.5">0.5-0.5 · tablas</option>
+            </select>
+          </label>
+          <button class="w-full rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white">Cargar partida</button>
+        </form>
+      `;
+    }
+
+    function renderPlayers() {
+      const stats = calculateStats();
+      const sortedPlayers = [...state.players].sort((a, b) => a.name.localeCompare(b.name, "es"));
+
+      document.querySelector("#view-players").innerHTML = `
+        <div class="grid gap-4 lg:grid-cols-[1fr_340px]">
+          <section>
+            <div>
+              <h2 class="text-lg font-bold">Jugadores</h2>
+              <p class="text-sm text-zinc-600">Editá nombres y marcá quiénes están activos para los próximos emparejamientos.</p>
+            </div>
+            <div class="mt-3 space-y-2">
+              ${sortedPlayers.map(player => renderPlayerRow(player, stats.get(player.id))).join("")}
+            </div>
+          </section>
+
+          <aside class="space-y-4">
+            <div class="rounded-lg border border-zinc-200 bg-white p-4">
+              <h3 class="font-bold">Agregar jugador</h3>
+              <form id="addPlayerForm" class="mt-3 flex gap-2">
+                <input name="name" class="min-h-10 min-w-0 flex-1 rounded-lg border border-zinc-300 px-3 text-sm" placeholder="Nombre completo">
+                <button class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white">Agregar</button>
+              </form>
+            </div>
+            <div class="rounded-lg border border-red-200 bg-white p-4">
+              <h3 class="font-bold text-red-800">Zona de reinicio</h3>
+              <p class="mt-1 text-sm text-zinc-600">Vuelve a los 16 participantes oficiales y las 3 partidas iniciales.</p>
+              <button id="resetTournament" class="mt-3 rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm font-semibold text-red-800">Restablecer datos iniciales</button>
+            </div>
+          </aside>
+        </div>
+      `;
+
+      sortedPlayers.forEach(player => {
+        const row = document.querySelector(`[data-player-row="${player.id}"]`);
+        row?.querySelector(`[data-player-name]`)?.addEventListener("change", event => {
+          const name = event.target.value.trim();
+          if (!name) {
+            showToast("El nombre no puede estar vacío.");
+            render();
+            return;
+          }
+          updatePlayer(player.id, { name });
+        });
+        row?.querySelector(`[data-player-active]`)?.addEventListener("change", event => {
+          updatePlayer(player.id, { active: event.target.checked });
+        });
+        row?.querySelector(`[data-remove-player]`)?.addEventListener("click", () => removeOrDeactivatePlayer(player.id));
+      });
+
+      document.querySelector("#addPlayerForm")?.addEventListener("submit", event => {
+        event.preventDefault();
+        addPlayer(event.currentTarget);
+      });
+      document.querySelector("#resetTournament")?.addEventListener("click", resetTournament);
+    }
+
+    function renderPlayerRow(player, stat) {
+      return `
+        <article class="rounded-lg border border-zinc-200 bg-white p-3" data-player-row="${player.id}">
+          <div class="grid gap-3 md:grid-cols-[1fr_auto_auto] md:items-center">
+            <input data-player-name value="${escapeAttribute(player.name)}" class="min-h-10 w-full rounded-lg border border-zinc-300 px-3 text-sm font-semibold">
+            <label class="flex items-center gap-2 text-sm font-semibold text-zinc-700">
+              <input data-player-active type="checkbox" ${player.active ? "checked" : ""} class="h-4 w-4">
+              Activo
+            </label>
+            <button data-remove-player class="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm font-semibold text-zinc-700">${playerHasMatches(player.id) ? "Desactivar" : "Eliminar"}</button>
+          </div>
+          <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-600">
+            <span>${formatPoints(stat?.points || 0)} pts</span>
+            <span>${stat?.played || 0} partidas</span>
+            <span>${colorBadges(stat?.colors || [])}</span>
+          </div>
+        </article>
+      `;
+    }
+
+    function playerHasMatches(playerId) {
+      return state.matches.some(match => match.whiteId === playerId || match.blackId === playerId);
+    }
+
+    function emptyState(message) {
+      return `<div class="rounded-lg border border-dashed border-zinc-300 bg-white p-5 text-sm text-zinc-600">${escapeHtml(message)}</div>`;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replaceAll("`", "&#096;");
+    }
+
+    function renderTabs() {
+      document.querySelectorAll(".tab-btn").forEach(button => {
+        const active = button.dataset.view === currentView;
+        button.classList.toggle("tab-active", active);
+        button.classList.toggle("tab-inactive", !active);
+      });
+
+      document.querySelectorAll(".view").forEach(section => {
+        section.classList.toggle("hidden", section.id !== `view-${currentView}`);
+      });
+    }
+
+    function render() {
+      renderSummary();
+      renderTabs();
+      renderStandings();
+      renderPairings();
+      renderHistory();
+      renderPlayers();
+    }
+
+    document.querySelectorAll(".tab-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        currentView = button.dataset.view;
+        renderTabs();
+      });
+    });
+
+    render();
+  </script>
+</body>
+</html>
