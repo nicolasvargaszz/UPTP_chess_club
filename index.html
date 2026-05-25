@@ -165,7 +165,12 @@
       </div>
       <form id="adminForm" class="mt-5 space-y-3">
         <label class="block text-sm">
-          <span class="mb-1 block font-bold text-slate-700">Clave local</span>
+          <span class="mb-1 block font-bold text-slate-700">URL de API remota</span>
+          <input id="apiUrlInput" name="apiUrl" type="url" placeholder="https://example.trycloudflare.com" class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3">
+          <span class="mt-1 block text-xs font-semibold text-slate-500">Dejalo vacío para usar solo la base local del navegador.</span>
+        </label>
+        <label class="block text-sm">
+          <span class="mb-1 block font-bold text-slate-700">Clave administrador</span>
           <input id="adminKeyInput" name="key" type="password" autocomplete="current-password" class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3">
         </label>
         <button id="adminSubmit" class="w-full rounded-xl bg-slate-950 px-4 py-3 text-sm font-black text-white">Validar</button>
@@ -179,6 +184,7 @@
     const DB_VERSION = 1;
     const STORE_NAME = "records";
     const LEGACY_STORAGE_KEY = "uptpSwissTournamentState.v1";
+    const REMOTE_API_STORAGE_KEY = "uptpRemoteApiUrl";
     const LOGO_SOURCE = "Logos institucionales locales";
 
     const OFFICIAL_PLAYERS = [
@@ -278,7 +284,10 @@
     let state = createInitialState();
     let settings = { ...DEFAULT_SETTINGS };
     let currentView = "dashboard";
-    let adminUnlocked = sessionStorage.getItem("uptpAdminUnlocked") === "true";
+    let remoteApiUrl = localStorage.getItem(REMOTE_API_STORAGE_KEY) || "";
+    let remoteConnected = false;
+    let remoteToken = sessionStorage.getItem("uptpRemoteToken") || "";
+    let adminUnlocked = Boolean(remoteToken) || sessionStorage.getItem("uptpAdminUnlocked") === "true";
 
     function createInitialState() {
       return {
@@ -298,6 +307,75 @@
 
     function clone(value) {
       return JSON.parse(JSON.stringify(value));
+    }
+
+    function normalizeApiUrl(value) {
+      return String(value || "").trim().replace(/\/+$/, "");
+    }
+
+    async function apiRequest(path, options = {}) {
+      if (!remoteApiUrl) throw new Error("remote_api_missing");
+
+      const headers = {
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+      };
+
+      if (remoteToken) headers.Authorization = `Bearer ${remoteToken}`;
+
+      const response = await fetch(`${remoteApiUrl}${path}`, {
+        ...options,
+        headers
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        if (response.status === 401) {
+          remoteToken = "";
+          adminUnlocked = false;
+          sessionStorage.removeItem("uptpRemoteToken");
+          sessionStorage.removeItem("uptpAdminUnlocked");
+        }
+        throw new Error(data.error || `api_${response.status}`);
+      }
+
+      return data;
+    }
+
+    async function loadRemoteData() {
+      if (!remoteApiUrl) return false;
+
+      try {
+        const snapshot = await apiRequest("/api/state");
+        state = normalizeState(snapshot.state || createInitialState());
+        settings = { ...DEFAULT_SETTINGS, ...(snapshot.settings || {}) };
+        remoteConnected = true;
+        return true;
+      } catch {
+        remoteConnected = false;
+        return false;
+      }
+    }
+
+    async function saveRemoteSnapshot() {
+      if (!remoteConnected || !adminUnlocked) return false;
+
+      const snapshot = await apiRequest("/api/state", {
+        method: "PUT",
+        body: JSON.stringify({
+          state,
+          settings: publicSettings()
+        })
+      });
+
+      state = normalizeState(snapshot.state || state);
+      settings = { ...DEFAULT_SETTINGS, ...(snapshot.settings || settings) };
+      return true;
+    }
+
+    function publicSettings() {
+      const { adminHash, ...safeSettings } = settings;
+      return safeSettings;
     }
 
     function openDatabase() {
@@ -352,6 +430,14 @@
     async function loadData() {
       database = await openDatabase();
       dbAvailable = Boolean(database);
+      remoteApiUrl = normalizeApiUrl(remoteApiUrl);
+
+      if (await loadRemoteData()) return;
+      if (remoteApiUrl && remoteToken) {
+        remoteToken = "";
+        adminUnlocked = sessionStorage.getItem("uptpAdminUnlocked") === "true";
+        sessionStorage.removeItem("uptpRemoteToken");
+      }
 
       const savedState = await dbGet("tournament");
       const savedSettings = await dbGet("settings");
@@ -431,10 +517,18 @@
 
     async function saveState() {
       state.updatedAt = new Date().toISOString();
+      if (remoteConnected) {
+        await saveRemoteSnapshot();
+        return;
+      }
       await dbSet("tournament", state);
     }
 
     async function saveSettings() {
+      if (remoteConnected) {
+        await saveRemoteSnapshot();
+        return;
+      }
       await dbSet("settings", settings);
     }
 
@@ -887,7 +981,9 @@
       `).join("");
 
       document.querySelector("#heroRound").textContent = String(maxRound());
-      document.querySelector("#adminBadge").textContent = adminUnlocked ? "Admin activo" : "Bloqueado";
+      document.querySelector("#adminBadge").textContent = adminUnlocked
+        ? (remoteConnected ? "Admin API" : "Admin local")
+        : (remoteConnected ? "API conectada" : "Bloqueado");
       document.querySelector("#adminBadge").className = adminUnlocked
         ? "rounded-full bg-emerald-400 px-3 py-1 text-xs font-black text-emerald-950"
         : "rounded-full bg-white/10 px-3 py-1 text-xs font-black text-white";
@@ -1271,8 +1367,8 @@
         <section class="surface rounded-2xl p-5">
           <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 class="text-xl font-black">Base local</h2>
-              <p class="mt-1 text-sm font-semibold text-slate-600">${dbAvailable ? "IndexedDB activo" : "Fallback localStorage activo"}</p>
+              <h2 class="text-xl font-black">Base de datos</h2>
+              <p class="mt-1 text-sm font-semibold text-slate-600">${remoteConnected ? `API remota conectada: ${escapeHtml(remoteApiUrl)}` : (dbAvailable ? "IndexedDB local activo" : "Fallback localStorage activo")}</p>
             </div>
             <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">${state.matches.length} partidas · ${state.players.length} jugadores</span>
           </div>
@@ -1436,10 +1532,17 @@
       modal.classList.remove("hidden");
       modal.classList.add("flex");
       document.querySelector("#adminKeyInput").value = "";
+      document.querySelector("#apiUrlInput").value = remoteApiUrl;
 
-      if (adminUnlocked) {
-        hint.textContent = "La sesión administrativa está activa en este navegador.";
-        submit.textContent = "Actualizar clave";
+      if (remoteConnected) {
+        hint.textContent = adminUnlocked
+          ? "Conectado a la API remota. La sesión administrativa está activa."
+          : "Ingresá la clave del servidor para habilitar resultados y edición.";
+        submit.textContent = adminUnlocked ? "Revalidar API" : "Validar API";
+        lockButton.classList.toggle("hidden", !adminUnlocked);
+      } else if (adminUnlocked) {
+        hint.textContent = "La sesión administrativa local está activa en este navegador.";
+        submit.textContent = "Actualizar clave local";
         lockButton.classList.remove("hidden");
       } else if (settings.adminHash) {
         hint.textContent = "Ingresá la clave local para habilitar resultados y edición.";
@@ -1460,8 +1563,45 @@
 
     async function handleAdminForm(event) {
       event.preventDefault();
-      const key = String(new FormData(event.currentTarget).get("key") || "").trim();
+      const formData = new FormData(event.currentTarget);
+      const requestedApiUrl = normalizeApiUrl(formData.get("apiUrl"));
+      const key = String(formData.get("key") || "").trim();
       if (key.length < 4) return showToast("La clave debe tener al menos 4 caracteres.");
+
+      if (requestedApiUrl) {
+        remoteApiUrl = requestedApiUrl;
+        localStorage.setItem(REMOTE_API_STORAGE_KEY, remoteApiUrl);
+
+        try {
+          await loadRemoteData();
+          const login = await apiRequest("/api/login", {
+            method: "POST",
+            body: JSON.stringify({ key })
+          });
+          remoteToken = login.token;
+          adminUnlocked = true;
+          sessionStorage.setItem("uptpRemoteToken", remoteToken);
+          sessionStorage.setItem("uptpAdminUnlocked", "true");
+          closeAdminModal();
+          render();
+          showToast("API remota conectada y administrador activo.");
+        } catch {
+          remoteConnected = false;
+          remoteToken = "";
+          sessionStorage.removeItem("uptpRemoteToken");
+          showToast("No se pudo conectar o la clave del servidor es inválida.");
+        }
+        return;
+      }
+
+      if (remoteApiUrl && !requestedApiUrl) {
+        remoteApiUrl = "";
+        remoteConnected = false;
+        remoteToken = "";
+        localStorage.removeItem(REMOTE_API_STORAGE_KEY);
+        sessionStorage.removeItem("uptpRemoteToken");
+      }
+
       const hash = await hashText(key);
 
       if (!settings.adminHash || adminUnlocked) {
@@ -1488,6 +1628,8 @@
 
     function lockAdmin() {
       adminUnlocked = false;
+      remoteToken = "";
+      sessionStorage.removeItem("uptpRemoteToken");
       sessionStorage.removeItem("uptpAdminUnlocked");
       closeAdminModal();
       render();

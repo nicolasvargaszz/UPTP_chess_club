@@ -29,3 +29,90 @@ App web estática para administrar un torneo suizo presencial de ajedrez del UPT
 GitHub Pages sirve archivos estáticos, así que esta versión guarda datos en **IndexedDB**, una base local del navegador. Eso significa que los cambios quedan guardados en tu computadora o celular, incluso al cerrar la página, pero no se sincronizan automáticamente con otros dispositivos.
 
 Para una base compartida real entre todos los celulares/computadoras se necesita conectar un backend externo, por ejemplo Supabase, Firebase o una API propia.
+
+## Conectar GitHub Pages con DigitalOcean + SQLite
+
+Esta versión incluye un backend liviano en `server/`. Guarda todo en SQLite y expone una API para que el `index.html` sincronice los datos desde GitHub Pages.
+
+### 1. Entrar al Droplet
+
+```bash
+ssh -i ~/.ssh/autobots_do_ed25519 root@24.199.127.101
+```
+
+### 2. Instalar dependencias
+
+```bash
+apt update
+apt install -y git nodejs npm build-essential sqlite3
+```
+
+### 3. Descargar el proyecto
+
+```bash
+git clone https://github.com/nicolasvargaszz/UPTP_chess_club.git
+cd UPTP_chess_club/server
+npm install
+```
+
+### 4. Configurar la API
+
+```bash
+cp .env.example .env
+nano .env
+```
+
+Usá algo así:
+
+```bash
+PORT=3000
+JWT_SECRET=pega-aqui-un-secreto-largo
+ADMIN_PASSWORD=tu-clave-admin
+CORS_ORIGIN=https://nicolasvargaszz.github.io
+```
+
+Podés generar el secreto con:
+
+```bash
+openssl rand -hex 32
+```
+
+### 5. Levantar la API
+
+```bash
+npm start
+```
+
+Probá en el Droplet:
+
+```bash
+curl http://localhost:3000/api/health
+```
+
+### 6. Exponer con Cloudflare Tunnel sin dominio
+
+En otra terminal SSH del Droplet:
+
+```bash
+wget -O cloudflared https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+chmod +x cloudflared
+./cloudflared tunnel --url http://localhost:3000
+```
+
+Cloudflare te va a dar una URL tipo:
+
+```txt
+https://algo-random.trycloudflare.com
+```
+
+### 7. Conectar la web
+
+1. Abrí `https://nicolasvargaszz.github.io/UPTP_chess_club/`.
+2. Tocá **Admin**.
+3. En **URL de API remota**, pegá la URL `https://...trycloudflare.com`.
+4. En **Clave administrador**, poné la clave de `ADMIN_PASSWORD`.
+5. Tocá **Validar API**.
+
+Desde ese momento los resultados se guardan en SQLite dentro del Droplet.
+
+Nota: con Quick Tunnel la URL `trycloudflare.com` puede cambiar si reiniciás el túnel. Si cambia, volvés a entrar en **Admin** y pegás la nueva URL.
