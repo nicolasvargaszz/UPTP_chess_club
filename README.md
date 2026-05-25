@@ -24,6 +24,8 @@ App web estática para administrar un torneo suizo presencial de ajedrez del UPT
 4. Tocá **Guardar**.
 5. Cuando ya no haya partidas pendientes, la app puede generar la siguiente ronda suiza automáticamente si la opción **Auto emparejar** está activa en **Base local**.
 
+Si por horario no se pueden terminar todas las partidas de una ronda, entrá como admin en **Partidas** y usá **Generar adelanto**. Esa opción empareja solamente a jugadores que no tienen partidas pendientes y deja vivas las partidas atrasadas.
+
 ## Base de datos
 
 GitHub Pages sirve archivos estáticos, así que esta versión guarda datos en **IndexedDB**, una base local del navegador. Eso significa que los cambios quedan guardados en tu computadora o celular, incluso al cerrar la página, pero no se sincronizan automáticamente con otros dispositivos.

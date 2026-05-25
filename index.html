@@ -795,15 +795,46 @@
       };
     }
 
+    function advanceGenerationContext() {
+      const busyIds = new Set();
+      pendingMatches().forEach(match => {
+        busyIds.add(match.whiteId);
+        busyIds.add(match.blackId);
+      });
+
+      const round = maxRound() + 1;
+      const alreadyAdvancedIds = new Set();
+      matchesForRound(round).forEach(match => {
+        alreadyAdvancedIds.add(match.whiteId);
+        alreadyAdvancedIds.add(match.blackId);
+      });
+
+      const playerIds = activePlayers()
+        .map(player => player.id)
+        .filter(id => !busyIds.has(id) && !alreadyAdvancedIds.has(id));
+
+      return {
+        mode: "advance",
+        round,
+        existingMatches: matchesForRound(round).length,
+        playerIds: playerIds.length % 2 === 0 ? playerIds : playerIds.slice(0, -1)
+      };
+    }
+
     async function generatePairings(options = {}) {
-      if (pendingMatches().length > 0) {
+      if (!options.advance && pendingMatches().length > 0) {
         if (!options.silent) showToast("Primero cargá los resultados pendientes.");
         return false;
       }
 
-      const context = generationContext();
+      const context = options.advance ? advanceGenerationContext() : generationContext();
       if (!context) {
         if (!options.silent) showToast("No hay una ronda disponible para generar.");
+        return false;
+      }
+
+      if (context.playerIds.length < 2) {
+        if (!options.silent) showToast("No hay suficientes jugadores libres para adelantar partidas.");
         return false;
       }
 
@@ -820,7 +851,7 @@
           blackId: pair.blackId,
           result: "",
           createdAt,
-          source: options.auto ? "auto" : "admin"
+          source: options.advance ? "advance" : (options.auto ? "auto" : "admin")
         };
       });
 
@@ -829,8 +860,12 @@
       currentView = "pairings";
       render();
       if (!options.silent) {
-        const verb = context.mode === "complete" ? "completó" : "generó";
-        showToast(`Se ${verb} la ronda ${context.round}: ${newMatches.length} partidas.`);
+        if (context.mode === "advance") {
+          showToast(`Se generó un adelanto de ronda ${context.round}: ${newMatches.length} partidas con jugadores libres.`);
+        } else {
+          const verb = context.mode === "complete" ? "completó" : "generó";
+          showToast(`Se ${verb} la ronda ${context.round}: ${newMatches.length} partidas.`);
+        }
       }
       return true;
     }
@@ -1099,8 +1134,16 @@
               <h2 class="text-xl font-black">Partidas definidas</h2>
               <p class="mt-1 text-sm font-semibold text-slate-600">Izquierda blancas, derecha negras.</p>
             </div>
-            <button id="pairingGenerate" class="admin-only rounded-xl bg-slate-950 px-4 py-3 text-sm font-black text-white" ${adminUnlocked ? "" : "aria-disabled=\"true\""}>Generar suizo</button>
+            <div class="flex flex-col gap-2 sm:flex-row">
+              <button id="pairingGenerate" class="admin-only rounded-xl bg-slate-950 px-4 py-3 text-sm font-black text-white" ${adminUnlocked ? "" : "aria-disabled=\"true\""}>Generar suizo</button>
+              <button id="advanceGenerate" class="admin-only rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-black text-slate-900" ${adminUnlocked ? "" : "aria-disabled=\"true\""}>Generar adelanto</button>
+            </div>
           </div>
+          ${pending.length ? `
+            <div class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-bold text-amber-950">
+              Hay ${pending.length} partidas pendientes. Si por horario necesitás seguir jugando, usá <span class="font-black">Generar adelanto</span>: empareja solamente a jugadores libres y deja intactas las partidas pendientes.
+            </div>
+          ` : ""}
           <div class="mt-5 space-y-5">
             ${grouped.length ? grouped.map(([title, matches]) => `
               <section>
@@ -1113,6 +1156,7 @@
       `;
 
       document.querySelector("#pairingGenerate")?.addEventListener("click", () => generatePairings());
+      document.querySelector("#advanceGenerate")?.addEventListener("click", () => generatePairings({ advance: true }));
       pending.forEach(match => {
         document.querySelector(`[data-result-form="${match.id}"]`)?.addEventListener("submit", event => {
           event.preventDefault();
@@ -1140,7 +1184,7 @@
         <article class="rounded-2xl border border-slate-200 bg-white p-4">
           <div class="flex items-center justify-between gap-3">
             <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">Mesa ${match.board}</span>
-            <span class="text-xs font-black uppercase tracking-[0.16em] text-slate-400">${match.source === "auto" ? "Auto" : "Manual"}</span>
+            <span class="text-xs font-black uppercase tracking-[0.16em] text-slate-400">${match.source === "advance" ? "Adelanto" : (match.source === "auto" ? "Auto" : "Manual")}</span>
           </div>
           <div class="mt-4 grid grid-cols-[1fr_auto_1fr] items-stretch gap-2">
             <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
