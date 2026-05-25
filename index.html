@@ -200,6 +200,33 @@
       "Nico Segovia"
     ];
 
+    const OFFICIAL_DATA_PATCH_ID = "official-round-1-live-games-2026-05-25";
+
+    const ROUND_ONE_OFFICIAL_UPDATES = [
+      {
+        id: "m-oficial-4-camila-ian",
+        round: 1,
+        batch: 2,
+        board: 1,
+        whiteId: "p1",
+        blackId: "p15",
+        result: "0.5-0.5",
+        createdAt: "2026-05-25T00:00:04.000Z",
+        source: "official"
+      },
+      {
+        id: "m-oficial-5-bruno-bareiro",
+        round: 1,
+        batch: 2,
+        board: 2,
+        whiteId: "p4",
+        blackId: "p5",
+        result: "",
+        createdAt: "2026-05-25T00:00:05.000Z",
+        source: "official"
+      }
+    ];
+
     const INITIAL_MATCHES = [
       {
         id: "m-inicial-1",
@@ -233,7 +260,8 @@
         result: "0-1",
         createdAt: "2026-05-25T00:00:03.000Z",
         source: "initial"
-      }
+      },
+      ...ROUND_ONE_OFFICIAL_UPDATES
     ];
 
     const DEFAULT_SETTINGS = {
@@ -262,6 +290,7 @@
           active: true
         })),
         matches: clone(INITIAL_MATCHES),
+        appliedPatches: [OFFICIAL_DATA_PATCH_ID],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
@@ -329,9 +358,11 @@
 
       if (savedState) {
         state = normalizeState(savedState);
+        if (applyOfficialDataPatches()) await saveState();
       } else {
         const legacy = readLegacyState();
         state = legacy ? normalizeState(legacy) : createInitialState();
+        if (legacy && applyOfficialDataPatches()) await saveState();
         await saveState();
       }
 
@@ -353,7 +384,8 @@
         ...createInitialState(),
         ...input,
         players: Array.isArray(input.players) ? input.players : [],
-        matches: Array.isArray(input.matches) ? input.matches : []
+        matches: Array.isArray(input.matches) ? input.matches : [],
+        appliedPatches: Array.isArray(input.appliedPatches) ? input.appliedPatches : []
       };
 
       normalized.players = normalized.players.map((player, index) => ({
@@ -376,6 +408,25 @@
       })).filter(match => match.whiteId && match.blackId);
 
       return normalized;
+    }
+
+    function applyOfficialDataPatches() {
+      if (state.appliedPatches.includes(OFFICIAL_DATA_PATCH_ID)) return false;
+
+      const officialPlayerIds = new Set(ROUND_ONE_OFFICIAL_UPDATES.flatMap(match => [match.whiteId, match.blackId]));
+      state.matches = state.matches.filter(match => {
+        const isOldAutoRoundOne = match.round === 1 && match.source === "auto" && !match.result;
+        const touchesOfficialGame = officialPlayerIds.has(match.whiteId) || officialPlayerIds.has(match.blackId);
+        return !(isOldAutoRoundOne && touchesOfficialGame);
+      });
+
+      for (const officialMatch of ROUND_ONE_OFFICIAL_UPDATES) {
+        const exists = state.matches.some(match => match.id === officialMatch.id);
+        if (!exists) state.matches.push(clone(officialMatch));
+      }
+
+      state.appliedPatches.push(OFFICIAL_DATA_PATCH_ID);
+      return true;
     }
 
     async function saveState() {
