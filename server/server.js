@@ -3,17 +3,40 @@ import Database from "better-sqlite3";
 import cors from "cors";
 import express from "express";
 import jwt from "jsonwebtoken";
-import { mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+loadEnvFile(join(__dirname, ".env"));
+
 const DATA_DIR = process.env.DATA_DIR || join(__dirname, "data");
 const DB_PATH = process.env.DB_PATH || join(DATA_DIR, "tournament.db");
 const PORT = Number(process.env.PORT || 3000);
 const JWT_SECRET = process.env.JWT_SECRET || "dev-change-this-secret";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "uptp-admin-change-me";
 const CORS_ORIGIN = process.env.CORS_ORIGIN || "*";
+
+function loadEnvFile(path) {
+  if (!existsSync(path)) return;
+
+  const lines = readFileSync(path, "utf8").split(/\r?\n/);
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+
+    const separator = trimmed.indexOf("=");
+    if (separator === -1) continue;
+
+    const key = trimmed.slice(0, separator).trim();
+    let value = trimmed.slice(separator + 1).trim();
+    value = value.replace(/^["']|["']$/g, "");
+
+    if (key && process.env[key] === undefined) {
+      process.env[key] = value;
+    }
+  }
+}
 
 const OFFICIAL_PLAYERS = [
   "Camila Rivas",
