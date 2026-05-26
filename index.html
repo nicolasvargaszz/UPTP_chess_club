@@ -203,10 +203,12 @@
       "Diego Barrios",
       "Saúl Rojas",
       "Ian Gibbons",
-      "Nico Segovia"
+      "Nico Segovia",
+      "Josue Hartman"
     ];
 
     const OFFICIAL_DATA_PATCH_ID = "official-round-1-live-games-2026-05-25";
+    const OFFICIAL_DATA_PATCH_ID_2026_05_26 = "official-results-2026-05-26-camila-saul-jose-fabrizio";
 
     const ROUND_ONE_OFFICIAL_UPDATES = [
       {
@@ -227,8 +229,55 @@
         board: 2,
         whiteId: "p4",
         blackId: "p5",
-        result: "",
+        result: "1-0",
         createdAt: "2026-05-25T00:00:05.000Z",
+        source: "official"
+      }
+    ];
+
+    const MAY_26_OFFICIAL_UPDATES = [
+      {
+        id: "m-oficial-6-oscar-diego",
+        round: 1,
+        batch: 3,
+        board: 2,
+        whiteId: "p9",
+        blackId: "p13",
+        result: "0-1",
+        createdAt: "2026-05-26T00:00:01.000Z",
+        source: "official"
+      },
+      {
+        id: "m-oficial-7-oscar-nicolas",
+        round: 2,
+        batch: 1,
+        board: 1,
+        whiteId: "p9",
+        blackId: "p8",
+        result: "1-0",
+        createdAt: "2026-05-26T00:00:02.000Z",
+        source: "official"
+      },
+      {
+        id: "m-oficial-8-camila-saul",
+        round: 2,
+        batch: 1,
+        board: 2,
+        whiteId: "p1",
+        blackId: "p14",
+        result: "0-1",
+        createdAt: "2026-05-26T00:00:03.000Z",
+        source: "official"
+      },
+      {
+        id: "m-oficial-9-jose-fabrizio",
+        round: 2,
+        batch: 1,
+        board: 3,
+        whiteId: "p2",
+        blackId: "p6",
+        result: "1-0",
+        createdAt: "2026-05-26T00:00:04.000Z",
         source: "official"
       }
     ];
@@ -267,7 +316,8 @@
         createdAt: "2026-05-25T00:00:03.000Z",
         source: "initial"
       },
-      ...ROUND_ONE_OFFICIAL_UPDATES
+      ...ROUND_ONE_OFFICIAL_UPDATES,
+      ...MAY_26_OFFICIAL_UPDATES
     ];
 
     const DEFAULT_SETTINGS = {
@@ -299,7 +349,7 @@
           active: true
         })),
         matches: clone(INITIAL_MATCHES),
-        appliedPatches: [OFFICIAL_DATA_PATCH_ID],
+        appliedPatches: [OFFICIAL_DATA_PATCH_ID, OFFICIAL_DATA_PATCH_ID_2026_05_26],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
@@ -511,22 +561,54 @@
     }
 
     function applyOfficialDataPatches() {
-      if (state.appliedPatches.includes(OFFICIAL_DATA_PATCH_ID)) return false;
+      let changed = false;
 
-      const officialPlayerIds = new Set(ROUND_ONE_OFFICIAL_UPDATES.flatMap(match => [match.whiteId, match.blackId]));
-      state.matches = state.matches.filter(match => {
-        const isOldAutoRoundOne = match.round === 1 && match.source === "auto" && !match.result;
-        const touchesOfficialGame = officialPlayerIds.has(match.whiteId) || officialPlayerIds.has(match.blackId);
-        return !(isOldAutoRoundOne && touchesOfficialGame);
-      });
+      if (!state.appliedPatches.includes(OFFICIAL_DATA_PATCH_ID)) {
+        const officialPlayerIds = new Set(ROUND_ONE_OFFICIAL_UPDATES.flatMap(match => [match.whiteId, match.blackId]));
+        state.matches = state.matches.filter(match => {
+          const isOldAutoRoundOne = match.round === 1 && match.source === "auto" && !match.result;
+          const touchesOfficialGame = officialPlayerIds.has(match.whiteId) || officialPlayerIds.has(match.blackId);
+          return !(isOldAutoRoundOne && touchesOfficialGame);
+        });
 
-      for (const officialMatch of ROUND_ONE_OFFICIAL_UPDATES) {
-        const exists = state.matches.some(match => match.id === officialMatch.id);
-        if (!exists) state.matches.push(clone(officialMatch));
+        for (const officialMatch of ROUND_ONE_OFFICIAL_UPDATES) {
+          upsertOfficialMatch(officialMatch);
+        }
+
+        state.appliedPatches.push(OFFICIAL_DATA_PATCH_ID);
+        changed = true;
       }
 
-      state.appliedPatches.push(OFFICIAL_DATA_PATCH_ID);
-      return true;
+      if (!state.appliedPatches.includes(OFFICIAL_DATA_PATCH_ID_2026_05_26)) {
+        ensureOfficialPlayer({ id: "p17", name: "Josue Hartman", seed: 17, active: true });
+        upsertOfficialMatch({ ...ROUND_ONE_OFFICIAL_UPDATES[1], result: "1-0" });
+        for (const officialMatch of MAY_26_OFFICIAL_UPDATES) {
+          upsertOfficialMatch(officialMatch);
+        }
+        state.appliedPatches.push(OFFICIAL_DATA_PATCH_ID_2026_05_26);
+        changed = true;
+      }
+
+      return changed;
+    }
+
+    function ensureOfficialPlayer(player) {
+      const exists = state.players.some(item => item.id === player.id || item.name.toLowerCase() === player.name.toLowerCase());
+      if (!exists) state.players.push(clone(player));
+    }
+
+    function upsertOfficialMatch(officialMatch) {
+      const existing = state.matches.find(match =>
+        match.id === officialMatch.id ||
+        ((match.whiteId === officialMatch.whiteId && match.blackId === officialMatch.blackId) ||
+          (match.whiteId === officialMatch.blackId && match.blackId === officialMatch.whiteId))
+      );
+
+      if (existing) {
+        Object.assign(existing, clone(officialMatch));
+      } else {
+        state.matches.push(clone(officialMatch));
+      }
     }
 
     async function saveState() {
@@ -1048,6 +1130,18 @@
         : `<div class="rounded-xl bg-white/10 p-3 text-sm text-slate-200">${context ? "Lista para emparejar" : "Torneo sin rondas pendientes"}</div>`;
     }
 
+    function remoteStatusNotice() {
+      if (!remoteApiUrl) return "";
+      if (remoteConnected) return "";
+
+      return `
+        <div class="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-900 lg:col-span-2">
+          La API remota configurada no responde: <span class="font-black">${escapeHtml(remoteApiUrl)}</span>.
+          Los cambios hechos ahora pueden quedar solo en este navegador. Revisá que el servicio del Droplet y Caddy estén activos.
+        </div>
+      `;
+    }
+
     function renderDashboard() {
       const stats = calculateStats();
       const table = standings();
@@ -1059,6 +1153,7 @@
 
       document.querySelector("#view-dashboard").innerHTML = `
         <div class="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+          ${remoteStatusNotice()}
           <section class="surface rounded-2xl p-5">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>

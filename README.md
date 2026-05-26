@@ -214,3 +214,5 @@ Ese script:
 - Agrega a `Josue Hartman`.
 - Marca `Oscar Martín Barrios Brizuela vs Diego Barrios` como victoria de Diego.
 - Agrega/marca `Oscar Martín Barrios Brizuela vs Nicolás Vargas` como victoria de Oscar.
+- Marca `Camila Rivas vs Saúl Rojas` como victoria de Saúl.
+- Marca `José Alejandro Costa Garrigoza vs Fabrizio Matias Castro Gamarra` como victoria de José.

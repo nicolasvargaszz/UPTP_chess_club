@@ -118,5 +118,23 @@ ensureMatch(state, {
   board: 1
 });
 
+ensureMatch(state, {
+  whiteName: "Camila",
+  blackName: "Saúl",
+  result: "0-1",
+  round: 2,
+  batch: 1,
+  board: 2
+});
+
+ensureMatch(state, {
+  whiteName: "José",
+  blackName: "Fabrizio",
+  result: "1-0",
+  round: 2,
+  batch: 1,
+  board: 3
+});
+
 writeState(state);
 console.log("Actualización 2026-05-26 aplicada correctamente.");

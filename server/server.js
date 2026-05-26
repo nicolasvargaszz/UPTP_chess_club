@@ -54,7 +54,8 @@ const OFFICIAL_PLAYERS = [
   "Diego Barrios",
   "Saúl Rojas",
   "Ian Gibbons",
-  "Nico Segovia"
+  "Nico Segovia",
+  "Josue Hartman"
 ];
 
 const INITIAL_MATCHES = [
@@ -109,8 +110,52 @@ const INITIAL_MATCHES = [
     board: 2,
     whiteId: "p4",
     blackId: "p5",
-    result: "",
+    result: "1-0",
     createdAt: "2026-05-25T00:00:05.000Z",
+    source: "official"
+  },
+  {
+    id: "m-oficial-6-oscar-diego",
+    round: 1,
+    batch: 3,
+    board: 2,
+    whiteId: "p9",
+    blackId: "p13",
+    result: "0-1",
+    createdAt: "2026-05-26T00:00:01.000Z",
+    source: "official"
+  },
+  {
+    id: "m-oficial-7-oscar-nicolas",
+    round: 2,
+    batch: 1,
+    board: 1,
+    whiteId: "p9",
+    blackId: "p8",
+    result: "1-0",
+    createdAt: "2026-05-26T00:00:02.000Z",
+    source: "official"
+  },
+  {
+    id: "m-oficial-8-camila-saul",
+    round: 2,
+    batch: 1,
+    board: 2,
+    whiteId: "p1",
+    blackId: "p14",
+    result: "0-1",
+    createdAt: "2026-05-26T00:00:03.000Z",
+    source: "official"
+  },
+  {
+    id: "m-oficial-9-jose-fabrizio",
+    round: 2,
+    batch: 1,
+    board: 3,
+    whiteId: "p2",
+    blackId: "p6",
+    result: "1-0",
+    createdAt: "2026-05-26T00:00:04.000Z",
     source: "official"
   }
 ];
