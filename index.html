@@ -431,6 +431,9 @@
       database = await openDatabase();
       dbAvailable = Boolean(database);
       remoteApiUrl = normalizeApiUrl(remoteApiUrl);
+      if (!remoteApiUrl) {
+        remoteApiUrl = await loadPublicApiUrl();
+      }
 
       if (await loadRemoteData()) return;
       if (remoteApiUrl && remoteToken) {
@@ -454,6 +457,17 @@
 
       settings = { ...DEFAULT_SETTINGS, ...(savedSettings || {}) };
       await saveSettings();
+    }
+
+    async function loadPublicApiUrl() {
+      try {
+        const response = await fetch("api-config.json", { cache: "no-store" });
+        if (!response.ok) return "";
+        const config = await response.json();
+        return normalizeApiUrl(config.apiUrl);
+      } catch {
+        return "";
+      }
     }
 
     function readLegacyState() {

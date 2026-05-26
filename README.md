@@ -118,3 +118,34 @@ https://algo-random.trycloudflare.com
 Desde ese momento los resultados se guardan en SQLite dentro del Droplet.
 
 Nota: con Quick Tunnel la URL `trycloudflare.com` puede cambiar si reiniciás el túnel. Si cambia, volvés a entrar en **Admin** y pegás la nueva URL.
+
+## Publicar la URL de API para todos
+
+El archivo `api-config.json` puede guardar una URL pública de API:
+
+```json
+{
+  "apiUrl": "https://tu-api.trycloudflare.com"
+}
+```
+
+Si ese archivo tiene una URL, todos los visitantes de GitHub Pages intentan leer la base remota automáticamente. Si está vacío, la app usa la base local del navegador o la URL que el admin configure manualmente.
+
+Con Quick Tunnel, si la URL cambia, se puede actualizar `api-config.json`, hacer commit/push y todos los visitantes usarán la nueva URL cuando GitHub Pages se actualice.
+
+## Aplicar datos oficiales desde el Droplet
+
+Para aplicar los cambios del 2026-05-26 directamente sobre SQLite:
+
+```bash
+cd ~/UPTP_chess_club
+git pull
+cd server
+node scripts/apply-2026-05-26-updates.js
+```
+
+Ese script:
+
+- Agrega a `Josue Hartman`.
+- Marca `Oscar Martín Barrios Brizuela vs Diego Barrios` como victoria de Diego.
+- Agrega/marca `Oscar Martín Barrios Brizuela vs Nicolás Vargas` como victoria de Oscar.
