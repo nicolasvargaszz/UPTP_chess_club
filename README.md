@@ -119,6 +119,71 @@ Desde ese momento los resultados se guardan en SQLite dentro del Droplet.
 
 Nota: con Quick Tunnel la URL `trycloudflare.com` puede cambiar si reiniciás el túnel. Si cambia, volvés a entrar en **Admin** y pegás la nueva URL.
 
+## API estable sin dominio pago
+
+Para no depender de Cloudflare Quick Tunnel, este repo queda configurado para usar:
+
+```txt
+https://24.199.127.101.sslip.io
+```
+
+`sslip.io` resuelve automáticamente ese host hacia la IP `24.199.127.101`, y Caddy puede pedir HTTPS gratis para esa URL.
+
+En el Droplet:
+
+```bash
+cd ~/UPTP_chess_club
+git pull
+cd server
+nano .env
+```
+
+Usá:
+
+```bash
+PORT=3000
+JWT_SECRET=tu-secreto-largo
+ADMIN_PASSWORD=tu-clave-admin
+CORS_ORIGIN=https://nicolasvargaszz.github.io
+```
+
+Instalá Caddy:
+
+```bash
+apt update
+apt install -y debian-keyring debian-archive-keyring apt-transport-https curl
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' > /etc/apt/sources.list.d/caddy-stable.list
+apt update
+apt install -y caddy
+```
+
+Configurá Caddy:
+
+```bash
+cp ~/UPTP_chess_club/server/deploy/Caddyfile /etc/caddy/Caddyfile
+systemctl reload caddy
+```
+
+Configurá la API como servicio permanente:
+
+```bash
+cp ~/UPTP_chess_club/server/deploy/uptp-chess-api.service /etc/systemd/system/uptp-chess-api.service
+systemctl daemon-reload
+systemctl enable uptp-chess-api
+systemctl restart uptp-chess-api
+```
+
+Verificá:
+
+```bash
+systemctl status uptp-chess-api --no-pager
+systemctl status caddy --no-pager
+curl https://24.199.127.101.sslip.io/api/health
+```
+
+Si eso responde `{"ok":true,...}`, todos los visitantes de GitHub Pages leen la base remota automáticamente porque `api-config.json` apunta a esa URL.
+
 ## Publicar la URL de API para todos
 
 El archivo `api-config.json` puede guardar una URL pública de API:

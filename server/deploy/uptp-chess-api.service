@@ -1,0 +1,14 @@
+[Unit]
+Description=UPTP Chess Club API
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/UPTP_chess_club/server
+ExecStart=/usr/bin/npm start
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
