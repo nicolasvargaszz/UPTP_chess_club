@@ -209,10 +209,9 @@ cd server
 node scripts/apply-2026-05-26-updates.js
 ```
 
-Ese script:
+Ese script deja como estado oficial las rondas 1 y 2, borra partidas `Auto`/`Adelanto` incorrectas y registra:
 
-- Agrega a `Josue Hartman`.
-- Marca `Oscar Martín Barrios Brizuela vs Diego Barrios` como victoria de Diego.
-- Agrega/marca `Oscar Martín Barrios Brizuela vs Nicolás Vargas` como victoria de Oscar.
-- Marca `Camila Rivas vs Saúl Rojas` como victoria de Saúl.
-- Marca `José Alejandro Costa Garrigoza vs Fabrizio Matias Castro Gamarra` como victoria de José.
+- Ronda 1 con mesa libre de `Maximiliano Ferloni` por 1 punto.
+- Ronda 2 con mesa libre de `David Nicolás Bareiro Pereira` por 1 punto.
+- Las partidas pendientes oficiales de ronda 1 y ronda 2.
+- Los resultados ya jugados, incluyendo `Camila Rivas vs Saúl Rojas` y `Fabrizio Matias Castro Gamarra vs José Alejandro Costa Garrigoza`.

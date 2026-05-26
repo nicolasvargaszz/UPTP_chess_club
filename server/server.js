@@ -117,8 +117,8 @@ const INITIAL_MATCHES = [
   {
     id: "m-oficial-6-oscar-diego",
     round: 1,
-    batch: 3,
-    board: 2,
+    batch: 2,
+    board: 3,
     whiteId: "p9",
     blackId: "p13",
     result: "0-1",
@@ -126,37 +126,134 @@ const INITIAL_MATCHES = [
     source: "official"
   },
   {
-    id: "m-oficial-7-oscar-nicolas",
+    id: "m-oficial-7-sara-fabrizio",
+    round: 1,
+    batch: 3,
+    board: 1,
+    whiteId: "p12",
+    blackId: "p6",
+    result: "",
+    createdAt: "2026-05-26T00:00:02.000Z",
+    source: "official"
+  },
+  {
+    id: "m-oficial-8-matias-josue",
+    round: 1,
+    batch: 3,
+    board: 2,
+    whiteId: "p10",
+    blackId: "p17",
+    result: "",
+    createdAt: "2026-05-26T00:00:03.000Z",
+    source: "official"
+  },
+  {
+    id: "bye-r1-maximiliano",
+    round: 1,
+    batch: 3,
+    board: 3,
+    byeId: "p7",
+    result: "bye",
+    createdAt: "2026-05-26T00:00:04.000Z",
+    source: "bye"
+  },
+  {
+    id: "m-oficial-9-oscar-nicolas",
     round: 2,
     batch: 1,
     board: 1,
     whiteId: "p9",
     blackId: "p8",
     result: "1-0",
-    createdAt: "2026-05-26T00:00:02.000Z",
+    createdAt: "2026-05-26T00:00:05.000Z",
     source: "official"
   },
   {
-    id: "m-oficial-8-camila-saul",
+    id: "m-oficial-10-camila-saul",
     round: 2,
     batch: 1,
     board: 2,
     whiteId: "p1",
     blackId: "p14",
     result: "0-1",
-    createdAt: "2026-05-26T00:00:03.000Z",
+    createdAt: "2026-05-26T00:00:06.000Z",
     source: "official"
   },
   {
-    id: "m-oficial-9-jose-fabrizio",
+    id: "m-oficial-11-fabrizio-jose",
     round: 2,
     batch: 1,
     board: 3,
-    whiteId: "p2",
-    blackId: "p6",
-    result: "1-0",
-    createdAt: "2026-05-26T00:00:04.000Z",
+    whiteId: "p6",
+    blackId: "p2",
+    result: "0-1",
+    createdAt: "2026-05-26T00:00:07.000Z",
     source: "official"
+  },
+  {
+    id: "m-oficial-12-nico-bruno",
+    round: 2,
+    batch: 2,
+    board: 1,
+    whiteId: "p16",
+    blackId: "p4",
+    result: "",
+    createdAt: "2026-05-26T00:00:08.000Z",
+    source: "official"
+  },
+  {
+    id: "m-oficial-13-diego-ian",
+    round: 2,
+    batch: 2,
+    board: 2,
+    whiteId: "p13",
+    blackId: "p15",
+    result: "",
+    createdAt: "2026-05-26T00:00:09.000Z",
+    source: "official"
+  },
+  {
+    id: "m-oficial-14-santiago-josue",
+    round: 2,
+    batch: 2,
+    board: 3,
+    whiteId: "p3",
+    blackId: "p17",
+    result: "",
+    createdAt: "2026-05-26T00:00:10.000Z",
+    source: "official"
+  },
+  {
+    id: "m-oficial-15-sara-matias",
+    round: 2,
+    batch: 3,
+    board: 1,
+    whiteId: "p12",
+    blackId: "p10",
+    result: "",
+    createdAt: "2026-05-26T00:00:11.000Z",
+    source: "official"
+  },
+  {
+    id: "m-oficial-16-maximiliano-yanina",
+    round: 2,
+    batch: 3,
+    board: 2,
+    whiteId: "p7",
+    blackId: "p11",
+    result: "",
+    createdAt: "2026-05-26T00:00:12.000Z",
+    source: "official"
+  },
+  {
+    id: "bye-r2-bareiro",
+    round: 2,
+    batch: 3,
+    board: 3,
+    byeId: "p5",
+    result: "bye",
+    createdAt: "2026-05-26T00:00:13.000Z",
+    source: "bye"
   }
 ];
 

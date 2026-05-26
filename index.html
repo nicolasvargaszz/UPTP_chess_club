@@ -207,80 +207,7 @@
       "Josue Hartman"
     ];
 
-    const OFFICIAL_DATA_PATCH_ID = "official-round-1-live-games-2026-05-25";
-    const OFFICIAL_DATA_PATCH_ID_2026_05_26 = "official-results-2026-05-26-camila-saul-jose-fabrizio";
-
-    const ROUND_ONE_OFFICIAL_UPDATES = [
-      {
-        id: "m-oficial-4-camila-ian",
-        round: 1,
-        batch: 2,
-        board: 1,
-        whiteId: "p1",
-        blackId: "p15",
-        result: "0.5-0.5",
-        createdAt: "2026-05-25T00:00:04.000Z",
-        source: "official"
-      },
-      {
-        id: "m-oficial-5-bruno-bareiro",
-        round: 1,
-        batch: 2,
-        board: 2,
-        whiteId: "p4",
-        blackId: "p5",
-        result: "1-0",
-        createdAt: "2026-05-25T00:00:05.000Z",
-        source: "official"
-      }
-    ];
-
-    const MAY_26_OFFICIAL_UPDATES = [
-      {
-        id: "m-oficial-6-oscar-diego",
-        round: 1,
-        batch: 3,
-        board: 2,
-        whiteId: "p9",
-        blackId: "p13",
-        result: "0-1",
-        createdAt: "2026-05-26T00:00:01.000Z",
-        source: "official"
-      },
-      {
-        id: "m-oficial-7-oscar-nicolas",
-        round: 2,
-        batch: 1,
-        board: 1,
-        whiteId: "p9",
-        blackId: "p8",
-        result: "1-0",
-        createdAt: "2026-05-26T00:00:02.000Z",
-        source: "official"
-      },
-      {
-        id: "m-oficial-8-camila-saul",
-        round: 2,
-        batch: 1,
-        board: 2,
-        whiteId: "p1",
-        blackId: "p14",
-        result: "0-1",
-        createdAt: "2026-05-26T00:00:03.000Z",
-        source: "official"
-      },
-      {
-        id: "m-oficial-9-jose-fabrizio",
-        round: 2,
-        batch: 1,
-        board: 3,
-        whiteId: "p2",
-        blackId: "p6",
-        result: "1-0",
-        createdAt: "2026-05-26T00:00:04.000Z",
-        source: "official"
-      }
-    ];
+    const OFFICIAL_DATA_PATCH_ID = "official-state-rounds-1-2-2026-05-26-v2";
 
     const INITIAL_MATCHES = [
       {
@@ -316,8 +243,169 @@
         createdAt: "2026-05-25T00:00:03.000Z",
         source: "initial"
       },
-      ...ROUND_ONE_OFFICIAL_UPDATES,
-      ...MAY_26_OFFICIAL_UPDATES
+      {
+        id: "m-oficial-4-camila-ian",
+        round: 1,
+        batch: 2,
+        board: 1,
+        whiteId: "p1",
+        blackId: "p15",
+        result: "0.5-0.5",
+        createdAt: "2026-05-25T00:00:04.000Z",
+        source: "official"
+      },
+      {
+        id: "m-oficial-5-bruno-bareiro",
+        round: 1,
+        batch: 2,
+        board: 2,
+        whiteId: "p4",
+        blackId: "p5",
+        result: "1-0",
+        createdAt: "2026-05-25T00:00:05.000Z",
+        source: "official"
+      },
+      {
+        id: "m-oficial-6-oscar-diego",
+        round: 1,
+        batch: 2,
+        board: 3,
+        whiteId: "p9",
+        blackId: "p13",
+        result: "0-1",
+        createdAt: "2026-05-26T00:00:01.000Z",
+        source: "official"
+      },
+      {
+        id: "m-oficial-7-sara-fabrizio",
+        round: 1,
+        batch: 3,
+        board: 1,
+        whiteId: "p12",
+        blackId: "p6",
+        result: "",
+        createdAt: "2026-05-26T00:00:02.000Z",
+        source: "official"
+      },
+      {
+        id: "m-oficial-8-matias-josue",
+        round: 1,
+        batch: 3,
+        board: 2,
+        whiteId: "p10",
+        blackId: "p17",
+        result: "",
+        createdAt: "2026-05-26T00:00:03.000Z",
+        source: "official"
+      },
+      {
+        id: "bye-r1-maximiliano",
+        round: 1,
+        batch: 3,
+        board: 3,
+        byeId: "p7",
+        result: "bye",
+        createdAt: "2026-05-26T00:00:04.000Z",
+        source: "bye"
+      },
+      {
+        id: "m-oficial-9-oscar-nicolas",
+        round: 2,
+        batch: 1,
+        board: 1,
+        whiteId: "p9",
+        blackId: "p8",
+        result: "1-0",
+        createdAt: "2026-05-26T00:00:05.000Z",
+        source: "official"
+      },
+      {
+        id: "m-oficial-10-camila-saul",
+        round: 2,
+        batch: 1,
+        board: 2,
+        whiteId: "p1",
+        blackId: "p14",
+        result: "0-1",
+        createdAt: "2026-05-26T00:00:06.000Z",
+        source: "official"
+      },
+      {
+        id: "m-oficial-11-fabrizio-jose",
+        round: 2,
+        batch: 1,
+        board: 3,
+        whiteId: "p6",
+        blackId: "p2",
+        result: "0-1",
+        createdAt: "2026-05-26T00:00:07.000Z",
+        source: "official"
+      },
+      {
+        id: "m-oficial-12-nico-bruno",
+        round: 2,
+        batch: 2,
+        board: 1,
+        whiteId: "p16",
+        blackId: "p4",
+        result: "",
+        createdAt: "2026-05-26T00:00:08.000Z",
+        source: "official"
+      },
+      {
+        id: "m-oficial-13-diego-ian",
+        round: 2,
+        batch: 2,
+        board: 2,
+        whiteId: "p13",
+        blackId: "p15",
+        result: "",
+        createdAt: "2026-05-26T00:00:09.000Z",
+        source: "official"
+      },
+      {
+        id: "m-oficial-14-santiago-josue",
+        round: 2,
+        batch: 2,
+        board: 3,
+        whiteId: "p3",
+        blackId: "p17",
+        result: "",
+        createdAt: "2026-05-26T00:00:10.000Z",
+        source: "official"
+      },
+      {
+        id: "m-oficial-15-sara-matias",
+        round: 2,
+        batch: 3,
+        board: 1,
+        whiteId: "p12",
+        blackId: "p10",
+        result: "",
+        createdAt: "2026-05-26T00:00:11.000Z",
+        source: "official"
+      },
+      {
+        id: "m-oficial-16-maximiliano-yanina",
+        round: 2,
+        batch: 3,
+        board: 2,
+        whiteId: "p7",
+        blackId: "p11",
+        result: "",
+        createdAt: "2026-05-26T00:00:12.000Z",
+        source: "official"
+      },
+      {
+        id: "bye-r2-bareiro",
+        round: 2,
+        batch: 3,
+        board: 3,
+        byeId: "p5",
+        result: "bye",
+        createdAt: "2026-05-26T00:00:13.000Z",
+        source: "bye"
+      }
     ];
 
     const DEFAULT_SETTINGS = {
@@ -349,7 +437,7 @@
           active: true
         })),
         matches: clone(INITIAL_MATCHES),
-        appliedPatches: [OFFICIAL_DATA_PATCH_ID, OFFICIAL_DATA_PATCH_ID_2026_05_26],
+        appliedPatches: [OFFICIAL_DATA_PATCH_ID],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
@@ -552,10 +640,11 @@
         board: positiveNumber(match.board, 1),
         whiteId: match.whiteId,
         blackId: match.blackId,
+        byeId: match.byeId,
         result: match.result || "",
         createdAt: match.createdAt || new Date().toISOString(),
         source: match.source || "manual"
-      })).filter(match => match.whiteId && match.blackId);
+      })).filter(match => (match.whiteId && match.blackId) || match.byeId);
 
       return normalized;
     }
@@ -564,28 +653,22 @@
       let changed = false;
 
       if (!state.appliedPatches.includes(OFFICIAL_DATA_PATCH_ID)) {
-        const officialPlayerIds = new Set(ROUND_ONE_OFFICIAL_UPDATES.flatMap(match => [match.whiteId, match.blackId]));
-        state.matches = state.matches.filter(match => {
-          const isOldAutoRoundOne = match.round === 1 && match.source === "auto" && !match.result;
-          const touchesOfficialGame = officialPlayerIds.has(match.whiteId) || officialPlayerIds.has(match.blackId);
-          return !(isOldAutoRoundOne && touchesOfficialGame);
-        });
-
-        for (const officialMatch of ROUND_ONE_OFFICIAL_UPDATES) {
-          upsertOfficialMatch(officialMatch);
-        }
-
-        state.appliedPatches.push(OFFICIAL_DATA_PATCH_ID);
-        changed = true;
-      }
-
-      if (!state.appliedPatches.includes(OFFICIAL_DATA_PATCH_ID_2026_05_26)) {
         ensureOfficialPlayer({ id: "p17", name: "Josue Hartman", seed: 17, active: true });
-        upsertOfficialMatch({ ...ROUND_ONE_OFFICIAL_UPDATES[1], result: "1-0" });
-        for (const officialMatch of MAY_26_OFFICIAL_UPDATES) {
+        const officialIds = new Set(INITIAL_MATCHES.map(match => match.id));
+        state.matches = state.matches.filter(match =>
+          officialIds.has(match.id) ||
+          (match.source !== "auto" && match.source !== "advance" && match.source !== "admin")
+        );
+        state.matches = state.matches.filter(match =>
+          match.id !== "m-oficial-6-oscar-diego" &&
+          match.id !== "m-oficial-7-oscar-nicolas" &&
+          match.id !== "m-oficial-8-camila-saul" &&
+          match.id !== "m-oficial-9-jose-fabrizio"
+        );
+        for (const officialMatch of INITIAL_MATCHES) {
           upsertOfficialMatch(officialMatch);
         }
-        state.appliedPatches.push(OFFICIAL_DATA_PATCH_ID_2026_05_26);
+        state.appliedPatches.push(OFFICIAL_DATA_PATCH_ID);
         changed = true;
       }
 
@@ -600,6 +683,7 @@
     function upsertOfficialMatch(officialMatch) {
       const existing = state.matches.find(match =>
         match.id === officialMatch.id ||
+        (officialMatch.byeId && match.byeId === officialMatch.byeId && match.round === officialMatch.round) ||
         ((match.whiteId === officialMatch.whiteId && match.blackId === officialMatch.blackId) ||
           (match.whiteId === officialMatch.blackId && match.blackId === officialMatch.whiteId))
       );
@@ -681,6 +765,7 @@
     }
 
     function scoreFromResult(match, playerId) {
+      if (match.result === "bye") return match.byeId === playerId ? 1 : 0;
       if (!match.result) return 0;
       if (match.result === "1-0") return match.whiteId === playerId ? 1 : 0;
       if (match.result === "0-1") return match.blackId === playerId ? 1 : 0;
@@ -709,6 +794,18 @@
       });
 
       for (const match of sortedMatches()) {
+        if (match.byeId) {
+          const bye = stats.get(match.byeId);
+          if (!bye) continue;
+          bye.scheduled += 1;
+          if (match.result === "bye") {
+            bye.points += 1;
+            bye.wins += 1;
+            bye.played += 1;
+          }
+          continue;
+        }
+
         const white = stats.get(match.whiteId);
         const black = stats.get(match.blackId);
         if (!white || !black) continue;
@@ -766,8 +863,9 @@
 
     function hasPlayedOrScheduled(idA, idB) {
       return state.matches.some(match =>
-        (match.whiteId === idA && match.blackId === idB) ||
-        (match.whiteId === idB && match.blackId === idA)
+        !match.byeId &&
+        ((match.whiteId === idA && match.blackId === idB) ||
+          (match.whiteId === idB && match.blackId === idA))
       );
     }
 
@@ -857,18 +955,35 @@
       return solve(ordered).pairs;
     }
 
+    function chooseByeId(playerIds) {
+      const stats = calculateStats();
+      const previousByes = new Set(state.matches.filter(match => match.byeId).map(match => match.byeId));
+      const candidates = playerIds.filter(id => !previousByes.has(id));
+      const pool = candidates.length ? candidates : playerIds;
+
+      return [...pool].sort((idA, idB) => {
+        const a = stats.get(idA);
+        const b = stats.get(idB);
+        return a.points - b.points ||
+          a.played - b.played ||
+          b.player.seed - a.player.seed ||
+          a.player.name.localeCompare(b.player.name, "es");
+      })[0];
+    }
+
     function generationContext() {
       const activeIds = activePlayers().map(player => player.id);
-      if (activeIds.length < 2 || activeIds.length % 2 !== 0) return null;
+      if (activeIds.length < 2) return null;
 
       const round = maxRound();
-      const expected = activeIds.length / 2;
+      const expected = Math.ceil(activeIds.length / 2);
       const roundMatches = matchesForRound(round);
       const isCurrentIncomplete = roundMatches.length > 0 && roundMatches.length < expected;
 
       if (isCurrentIncomplete) {
         const scheduledIds = new Set();
         roundMatches.forEach(match => {
+          if (match.byeId) scheduledIds.add(match.byeId);
           scheduledIds.add(match.whiteId);
           scheduledIds.add(match.blackId);
         });
@@ -894,6 +1009,7 @@
     function advanceGenerationContext() {
       const busyIds = new Set();
       pendingMatches().forEach(match => {
+        if (match.byeId) busyIds.add(match.byeId);
         busyIds.add(match.whiteId);
         busyIds.add(match.blackId);
       });
@@ -901,6 +1017,7 @@
       const round = maxRound() + 1;
       const alreadyAdvancedIds = new Set();
       matchesForRound(round).forEach(match => {
+        if (match.byeId) alreadyAdvancedIds.add(match.byeId);
         alreadyAdvancedIds.add(match.whiteId);
         alreadyAdvancedIds.add(match.blackId);
       });
@@ -934,7 +1051,26 @@
         return false;
       }
 
-      const pairs = generateSwissPairs(context.playerIds);
+      const playerIds = [...context.playerIds];
+      let byeMatch = null;
+
+      if (playerIds.length % 2 !== 0) {
+        const byeId = chooseByeId(playerIds);
+        const byeIndex = context.existingMatches + Math.floor(playerIds.length / 2);
+        byeMatch = {
+          id: `bye-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          round: context.round,
+          batch: Math.floor(byeIndex / settings.boardsPerBatch) + 1,
+          board: (byeIndex % settings.boardsPerBatch) + 1,
+          byeId,
+          result: "bye",
+          createdAt: new Date().toISOString(),
+          source: "bye"
+        };
+        playerIds.splice(playerIds.indexOf(byeId), 1);
+      }
+
+      const pairs = generateSwissPairs(playerIds);
       const createdAt = new Date().toISOString();
       const newMatches = pairs.map((pair, index) => {
         const matchIndex = context.existingMatches + index;
@@ -950,6 +1086,8 @@
           source: options.advance ? "advance" : (options.auto ? "auto" : "admin")
         };
       });
+
+      if (byeMatch) newMatches.push(byeMatch);
 
       state.matches.push(...newMatches);
       await saveState();
@@ -1068,6 +1206,7 @@
     }
 
     function resultText(match) {
+      if (match.result === "bye") return `Mesa libre: ${playerName(match.byeId)} (+1)`;
       if (match.result === "1-0") return `Ganó ${playerName(match.whiteId)}`;
       if (match.result === "0-1") return `Ganó ${playerName(match.blackId)}`;
       if (match.result === "0.5-0.5") return "Tablas";
@@ -1148,7 +1287,7 @@
       const pending = pendingMatches();
       const currentRoundMatches = matchesForRound(maxRound());
       const completedInRound = currentRoundMatches.filter(match => match.result).length;
-      const expected = activePlayers().length / 2;
+      const expected = Math.ceil(activePlayers().length / 2);
       const progress = expected ? Math.round((completedInRound / expected) * 100) : 0;
 
       document.querySelector("#view-dashboard").innerHTML = `
@@ -1218,6 +1357,18 @@
     }
 
     function miniPairing(match) {
+      if (match.byeId) {
+        return `
+          <article class="rounded-2xl border border-amber-200 bg-amber-50 p-3">
+            <div class="flex items-center justify-between gap-3">
+              <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-amber-900">R${match.round} · Mesa libre</span>
+              <span class="text-xs font-black text-amber-900">+1 punto</span>
+            </div>
+            <div class="mt-3 rounded-xl border border-amber-200 bg-white p-3 text-sm font-black">${escapeHtml(playerName(match.byeId))}</div>
+          </article>
+        `;
+      }
+
       return `
         <article class="rounded-2xl border border-slate-200 bg-white p-3">
           <div class="flex items-center justify-between gap-3">
@@ -1276,6 +1427,22 @@
     }
 
     function pairingCard(match) {
+      if (match.byeId) {
+        return `
+          <article class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+            <div class="flex items-center justify-between gap-3">
+              <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-amber-900">Mesa libre</span>
+              <span class="text-xs font-black uppercase tracking-[0.16em] text-amber-900">Bye</span>
+            </div>
+            <div class="mt-4 rounded-2xl border border-amber-200 bg-white p-4">
+              <p class="text-xs font-black uppercase tracking-[0.14em] text-amber-700">Jugador</p>
+              <p class="mt-2 text-base font-black">${escapeHtml(playerName(match.byeId))}</p>
+              <p class="mt-1 text-sm font-bold text-amber-900">+1 punto</p>
+            </div>
+          </article>
+        `;
+      }
+
       const adminControls = adminUnlocked ? `
         <form class="mt-4 flex flex-col gap-2 sm:flex-row" data-result-form="${match.id}">
           <select name="result" required class="min-h-11 flex-1 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold">
@@ -1391,6 +1558,21 @@
     }
 
     function historyCard(match) {
+      if (match.byeId) {
+        return `
+          <article class="rounded-2xl border border-amber-200 bg-amber-50 p-4" data-history-card="${match.id}">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <p class="text-xs font-black uppercase tracking-[0.14em] text-amber-700">R${match.round} · Mesa libre</p>
+                <p class="mt-1 text-base font-black">${escapeHtml(playerName(match.byeId))}</p>
+                <p class="mt-1 text-sm font-bold text-amber-900">Bye de 1 punto</p>
+              </div>
+              <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-amber-900">+1</span>
+            </div>
+          </article>
+        `;
+      }
+
       const adminFields = adminUnlocked ? `
         <div class="mt-4 grid gap-2 sm:grid-cols-3">
           <input data-round type="number" min="1" value="${match.round}" class="min-h-10 rounded-xl border border-slate-300 px-3 text-sm">
