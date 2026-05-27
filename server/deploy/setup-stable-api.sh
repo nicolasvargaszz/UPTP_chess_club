@@ -3,6 +3,7 @@ set -euo pipefail
 
 APP_DIR="/root/UPTP_chess_club"
 SERVER_DIR="$APP_DIR/server"
+WEB_DIR="/var/www/uptp_chess_club"
 API_HOST="24.199.127.101.sslip.io"
 API_URL="https://$API_HOST"
 SERVICE_NAME="uptp-chess-api"
@@ -24,7 +25,7 @@ git pull
 
 echo "== Installing system dependencies =="
 apt update
-apt install -y git curl ca-certificates gnupg debian-keyring debian-archive-keyring apt-transport-https build-essential python3 make g++ sqlite3 nodejs npm
+apt install -y git curl ca-certificates gnupg debian-keyring debian-archive-keyring apt-transport-https build-essential python3 make g++ sqlite3 nodejs npm rsync
 
 if ! command -v caddy >/dev/null 2>&1; then
   echo "== Installing Caddy =="
@@ -59,6 +60,15 @@ cp "$SERVER_DIR/deploy/$SERVICE_NAME.service" "/etc/systemd/system/$SERVICE_NAME
 systemctl daemon-reload
 systemctl enable "$SERVICE_NAME"
 systemctl restart "$SERVICE_NAME"
+
+echo "== Publishing static web files =="
+mkdir -p "$WEB_DIR"
+rsync -a --delete \
+  --exclude ".git" \
+  --exclude "server/data" \
+  --exclude "server/node_modules" \
+  "$APP_DIR/" "$WEB_DIR/"
+chown -R caddy:caddy "$WEB_DIR"
 
 echo "== Installing Caddy config =="
 cp "$SERVER_DIR/deploy/Caddyfile" /etc/caddy/Caddyfile
