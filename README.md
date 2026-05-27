@@ -17,6 +17,14 @@ App web estática para administrar un torneo suizo presencial de ajedrez del UPT
 
 La página ya lee `api-config.json`, así que no hace falta pegar la URL del servidor a mano cuando la API estable del Droplet está activa.
 
+Si el DNS gratuito `sslip.io` falla durante el torneo, usá la app directamente desde el Droplet:
+
+```txt
+http://24.199.127.101
+```
+
+Esa URL usa la misma base SQLite y evita problemas de conexión entre GitHub Pages y la API.
+
 ## Cómo cargar resultados
 
 1. Entrá como administrador.

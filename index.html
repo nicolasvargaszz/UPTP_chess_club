@@ -447,6 +447,16 @@
       return String(value || "").trim().replace(/\/+$/, "");
     }
 
+    function sameOriginApiUrl() {
+      const apiHosts = [
+        "24.199.127.101",
+        "24.199.127.101.sslip.io",
+        "24.199.127.101.nip.io"
+      ];
+
+      return apiHosts.includes(window.location.hostname) ? window.location.origin : "";
+    }
+
     async function apiRequest(path, options = {}) {
       if (!remoteApiUrl) throw new Error("remote_api_missing");
 
@@ -564,12 +574,13 @@
     async function loadData() {
       database = await openDatabase();
       dbAvailable = Boolean(database);
+      const originApiUrl = sameOriginApiUrl();
       const publicApiUrl = await loadPublicApiUrl();
       const savedApiUrl = normalizeApiUrl(localStorage.getItem(REMOTE_API_STORAGE_KEY));
-      remoteApiUrl = publicApiUrl || savedApiUrl;
+      remoteApiUrl = originApiUrl || publicApiUrl || savedApiUrl;
 
-      if (publicApiUrl && savedApiUrl !== publicApiUrl) {
-        localStorage.setItem(REMOTE_API_STORAGE_KEY, publicApiUrl);
+      if (remoteApiUrl && savedApiUrl !== remoteApiUrl) {
+        localStorage.setItem(REMOTE_API_STORAGE_KEY, remoteApiUrl);
       }
 
       if (await loadRemoteData()) {
@@ -581,8 +592,12 @@
       }
       if (remoteApiUrl && remoteToken) {
         remoteToken = "";
-        adminUnlocked = sessionStorage.getItem("uptpAdminUnlocked") === "true";
+        adminUnlocked = false;
         sessionStorage.removeItem("uptpRemoteToken");
+        sessionStorage.removeItem("uptpAdminUnlocked");
+      } else if (remoteApiUrl) {
+        adminUnlocked = false;
+        sessionStorage.removeItem("uptpAdminUnlocked");
       }
 
       const savedState = await dbGet("tournament");
@@ -703,18 +718,40 @@
     async function saveState() {
       state.updatedAt = new Date().toISOString();
       if (remoteConnected) {
-        await saveRemoteSnapshot();
-        return;
+        try {
+          await saveRemoteSnapshot();
+          return true;
+        } catch {
+          remoteConnected = false;
+          remoteToken = "";
+          adminUnlocked = false;
+          sessionStorage.removeItem("uptpRemoteToken");
+          sessionStorage.removeItem("uptpAdminUnlocked");
+          showToast("No se pudo guardar en la API. Volvé a entrar como admin.");
+          throw new Error("remote_save_failed");
+        }
       }
       await dbSet("tournament", state);
+      return true;
     }
 
     async function saveSettings() {
       if (remoteConnected) {
-        await saveRemoteSnapshot();
-        return;
+        try {
+          await saveRemoteSnapshot();
+          return true;
+        } catch {
+          remoteConnected = false;
+          remoteToken = "";
+          adminUnlocked = false;
+          sessionStorage.removeItem("uptpRemoteToken");
+          sessionStorage.removeItem("uptpAdminUnlocked");
+          showToast("No se pudo guardar la configuración en la API.");
+          throw new Error("remote_save_failed");
+        }
       }
       await dbSet("settings", settings);
+      return true;
     }
 
     async function hashText(text) {
@@ -1281,7 +1318,7 @@
       return `
         <div class="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-900 lg:col-span-2">
           La API remota configurada no responde: <span class="font-black">${escapeHtml(remoteApiUrl)}</span>.
-          Los cambios hechos ahora pueden quedar solo en este navegador. Revisá que el servicio del Droplet y Caddy estén activos.
+          Para administrar sin problemas, abrí la app desde <span class="font-black">http://24.199.127.101</span> y revisá que el servicio del Droplet y Caddy estén activos.
         </div>
       `;
     }
