@@ -36,10 +36,8 @@ fi
 
 cd "$SERVER_DIR"
 
-if [ ! -d node_modules ]; then
-  echo "== Installing Node dependencies =="
-  npm install
-fi
+echo "== Installing or repairing Node dependencies =="
+npm install
 
 if [ ! -f .env ]; then
   echo "== Creating .env =="
