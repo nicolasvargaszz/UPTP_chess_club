@@ -11,10 +11,11 @@ App web estática para administrar un torneo suizo presencial de ajedrez del UPT
 ## Cómo usar el modo administrador
 
 1. Abrí la página publicada o `index.html` en tu navegador.
-2. Tocá el botón **Admin** arriba a la derecha.
-3. La primera vez, escribí una clave de al menos 4 caracteres. Esa clave se guarda como hash en la base local del navegador.
-4. En las siguientes visitas, tocá **Admin** y escribí la misma clave para desbloquear edición.
-5. Con admin activo podés cargar resultados, editar jugadores, generar emparejamientos, importar/exportar backup y cambiar configuración.
+2. Tocá el botón **Entrar admin** arriba a la derecha.
+3. Escribí la contraseña configurada en el Droplet como `ADMIN_PASSWORD`.
+4. Con admin activo podés cargar resultados, editar jugadores, generar emparejamientos, importar/exportar backup y cambiar configuración.
+
+La página ya lee `api-config.json`, así que no hace falta pegar la URL del servidor a mano cuando la API estable del Droplet está activa.
 
 ## Cómo cargar resultados
 
