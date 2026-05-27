@@ -129,7 +129,17 @@ https://24.199.127.101.sslip.io
 
 `sslip.io` resuelve automáticamente ese host hacia la IP `24.199.127.101`, y Caddy puede pedir HTTPS gratis para esa URL.
 
-En el Droplet:
+Atajo recomendado en el Droplet:
+
+```bash
+cd ~
+curl -fsSL https://raw.githubusercontent.com/nicolasvargaszz/UPTP_chess_club/main/server/deploy/setup-stable-api.sh -o setup-stable-api.sh
+bash setup-stable-api.sh
+```
+
+El script instala dependencias, configura Caddy, deja la API como servicio permanente, aplica el estado oficial del torneo y muestra la URL final. Si ya existe `.env`, conserva tu clave admin actual.
+
+Comandos manuales equivalentes:
 
 ```bash
 cd ~/UPTP_chess_club
@@ -183,6 +193,12 @@ curl https://24.199.127.101.sslip.io/api/health
 ```
 
 Si eso responde `{"ok":true,...}`, todos los visitantes de GitHub Pages leen la base remota automáticamente porque `api-config.json` apunta a esa URL.
+
+URL alternativa de respaldo con el mismo Droplet:
+
+```txt
+https://24.199.127.101.nip.io
+```
 
 ## Publicar la URL de API para todos
 
