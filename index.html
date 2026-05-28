@@ -8,56 +8,78 @@
   <style>
     :root {
       color-scheme: light;
-      --ink: #172033;
-      --navy: #10384f;
-      --ember: #d64032;
+      --ink: #262421;
+      --charcoal: #312e2b;
+      --charcoal-soft: #3f3b36;
+      --board-light: #eeeed2;
+      --board-dark: #769656;
+      --board-dark-strong: #5d8740;
+      --move-green: #81b64c;
+      --cream: #f7f3df;
+      --paper: #fffdf4;
       --gold: #c9a24a;
-      --felt: #2f7d62;
+      --ember: #d64032;
     }
 
     body {
       min-height: 100vh;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
-        radial-gradient(circle at 8% 0%, rgba(214, 64, 50, 0.12), transparent 28rem),
-        radial-gradient(circle at 94% 12%, rgba(47, 125, 98, 0.14), transparent 30rem),
-        linear-gradient(180deg, #f7f3ea 0%, #f4f6f8 44%, #eef2f3 100%);
+        linear-gradient(45deg, rgba(118, 150, 86, 0.10) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(118, 150, 86, 0.10) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(118, 150, 86, 0.10) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(118, 150, 86, 0.10) 75%),
+        linear-gradient(180deg, #2f2c29 0%, #3a362f 34%, #ece4c7 34%, #f5f1df 100%);
+      background-position: 0 0, 0 18px, 18px -18px, -18px 0, 0 0;
+      background-size: 36px 36px, 36px 36px, 36px 36px, 36px 36px, auto;
       color: var(--ink);
     }
 
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(circle at 12% 4%, rgba(129, 182, 76, 0.22), transparent 24rem),
+        radial-gradient(circle at 84% 10%, rgba(201, 162, 74, 0.16), transparent 22rem);
+      pointer-events: none;
+    }
+
     .glass {
-      background: rgba(255, 255, 255, 0.82);
-      border: 1px solid rgba(255, 255, 255, 0.78);
-      box-shadow: 0 18px 45px rgba(23, 32, 51, 0.08);
-      backdrop-filter: blur(18px);
+      background: linear-gradient(135deg, rgba(255, 253, 244, 0.97), rgba(238, 238, 210, 0.91));
+      border: 1px solid rgba(38, 36, 33, 0.14);
+      box-shadow: 0 18px 45px rgba(15, 14, 12, 0.22);
+      backdrop-filter: blur(12px);
     }
 
     .surface {
-      background: rgba(255, 255, 255, 0.95);
-      border: 1px solid rgba(23, 32, 51, 0.09);
-      box-shadow: 0 12px 35px rgba(23, 32, 51, 0.07);
+      background: rgba(255, 253, 244, 0.97);
+      border: 1px solid rgba(38, 36, 33, 0.13);
+      box-shadow: 0 12px 30px rgba(38, 36, 33, 0.12);
     }
 
     .tab-active {
-      background: var(--ink);
+      background: var(--move-green);
       color: #fff;
-      border-color: var(--ink);
+      border-color: var(--move-green);
+      box-shadow: inset 0 -2px 0 rgba(38, 36, 33, 0.22), 0 8px 18px rgba(88, 132, 52, 0.28);
     }
 
     .tab-inactive {
-      background: rgba(255, 255, 255, 0.78);
-      color: #445066;
-      border-color: rgba(23, 32, 51, 0.12);
+      background: rgba(255, 253, 244, 0.92);
+      color: #4b4842;
+      border-color: rgba(38, 36, 33, 0.14);
     }
 
     .board-pattern {
       background-image:
-        linear-gradient(45deg, rgba(16, 56, 79, 0.08) 25%, transparent 25%),
-        linear-gradient(-45deg, rgba(16, 56, 79, 0.08) 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, rgba(16, 56, 79, 0.08) 75%),
-        linear-gradient(-45deg, transparent 75%, rgba(16, 56, 79, 0.08) 75%);
-      background-size: 24px 24px;
-      background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+        linear-gradient(45deg, rgba(118, 150, 86, 0.34) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(118, 150, 86, 0.34) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(118, 150, 86, 0.34) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(118, 150, 86, 0.34) 75%);
+      background-size: 32px 32px;
+      background-position: 0 0, 0 16px, 16px -16px, -16px 0;
     }
 
     .scroll-shadow {
@@ -77,10 +99,81 @@
       pointer-events: none;
     }
 
+    header .bg-slate-950,
+    aside.bg-slate-950 {
+      background: linear-gradient(180deg, var(--charcoal) 0%, #24211f 100%);
+    }
+
+    button,
+    input,
+    select {
+      border-radius: 0.65rem !important;
+    }
+
+    button.bg-slate-950,
+    .bg-slate-950 {
+      background-color: var(--charcoal) !important;
+    }
+
+    button.bg-emerald-700,
+    .bg-emerald-700,
+    .bg-emerald-600 {
+      background-color: var(--move-green) !important;
+    }
+
+    .text-emerald-700 {
+      color: var(--board-dark-strong) !important;
+    }
+
+    .bg-slate-50 {
+      background-color: rgba(238, 238, 210, 0.56) !important;
+    }
+
+    .bg-white,
+    .bg-white\/85 {
+      background-color: var(--paper) !important;
+    }
+
+    .rounded-2xl {
+      border-radius: 0.9rem !important;
+    }
+
+    .chess-board-frame {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(38, 36, 33, 0.88), rgba(49, 46, 43, 0.94)),
+        repeating-linear-gradient(45deg, rgba(118, 150, 86, 0.18) 0 14px, rgba(238, 238, 210, 0.14) 14px 28px);
+    }
+
+    .canvas-wrap {
+      overflow-x: auto;
+      border-radius: 0.9rem;
+      border: 1px solid rgba(38, 36, 33, 0.14);
+      background: #262421;
+      box-shadow: inset 0 0 0 8px rgba(255, 253, 244, 0.04);
+    }
+
+    #resultsCanvas {
+      display: block;
+      width: 100%;
+      min-width: 820px;
+      height: auto;
+    }
+
+    .metric-chip {
+      background: rgba(38, 36, 33, 0.06);
+      border: 1px solid rgba(38, 36, 33, 0.10);
+    }
+
     @media (max-width: 560px) {
       .mobile-pad {
         padding-left: 0.85rem;
         padding-right: 0.85rem;
+      }
+
+      #resultsCanvas {
+        min-width: 760px;
       }
     }
   </style>
@@ -99,8 +192,9 @@
                     <img class="h-12 w-12 rounded-xl object-contain" src="images.jpeg" alt="Logo UPTP">
                   </div>
                   <div class="min-w-0">
-                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-red-700">UPTP Chess Club</p>
-                    <h1 class="mt-1 text-2xl font-black tracking-normal text-slate-950 sm:text-4xl">Swiss Manager</h1>
+                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-green-800">UPTP Chess Club</p>
+                    <h1 class="mt-1 text-2xl font-black tracking-normal text-slate-950 sm:text-4xl">Torneo Suizo 5+0</h1>
+                    <p class="mt-1 text-sm font-bold text-slate-600">3 tableros físicos · izquierda blancas · derecha negras</p>
                   </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -124,7 +218,7 @@
             <div class="mt-5 overflow-hidden rounded-2xl border border-white/10 bg-white p-3">
               <img class="h-24 w-full object-contain" src="uptp.jpg" alt="Universidad Politécnica Taiwan Paraguay">
             </div>
-            <div class="mt-5 rounded-2xl border border-white/10 bg-white/10 p-4">
+            <div class="chess-board-frame mt-5 rounded-2xl border border-white/10 p-4">
               <p class="text-sm font-semibold text-slate-200">Siguiente tanda</p>
               <div id="nextBatchPreview" class="mt-3 space-y-2"></div>
             </div>
@@ -137,6 +231,7 @@
       <nav class="flex flex-wrap gap-2" aria-label="Vistas">
         <button class="tab-btn rounded-xl border px-4 py-2 text-sm font-bold" data-view="dashboard">Panel</button>
         <button class="tab-btn rounded-xl border px-4 py-2 text-sm font-bold" data-view="pairings">Partidas</button>
+        <button class="tab-btn rounded-xl border px-4 py-2 text-sm font-bold" data-view="map">Mapa</button>
         <button class="tab-btn rounded-xl border px-4 py-2 text-sm font-bold" data-view="standings">Posiciones</button>
         <button class="tab-btn rounded-xl border px-4 py-2 text-sm font-bold" data-view="history">Historial</button>
         <button class="tab-btn rounded-xl border px-4 py-2 text-sm font-bold" data-view="players">Jugadores</button>
@@ -147,6 +242,7 @@
 
       <section id="view-dashboard" class="view mt-4"></section>
       <section id="view-pairings" class="view mt-4 hidden"></section>
+      <section id="view-map" class="view mt-4 hidden"></section>
       <section id="view-standings" class="view mt-4 hidden"></section>
       <section id="view-history" class="view mt-4 hidden"></section>
       <section id="view-players" class="view mt-4 hidden"></section>
@@ -1426,6 +1522,273 @@
       `;
     }
 
+    function renderMap() {
+      const matches = sortedMatches();
+      const completed = matches.filter(match => match.result).length;
+      const pending = matches.length - completed;
+      const rounds = new Set(matches.map(match => match.round)).size;
+
+      document.querySelector("#view-map").innerHTML = `
+        <section class="surface rounded-2xl p-5">
+          <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <h2 class="text-xl font-black">Mapa de partidas</h2>
+              <p class="mt-1 text-sm font-semibold text-slate-600">Lienzo visual con rondas, mesas, resultados y partidas pendientes.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span class="metric-chip rounded-xl px-3 py-2 text-xs font-black">${matches.length} partidas</span>
+              <span class="metric-chip rounded-xl px-3 py-2 text-xs font-black">${completed} resultados</span>
+              <span class="metric-chip rounded-xl px-3 py-2 text-xs font-black">${pending} pendientes</span>
+              <span class="metric-chip rounded-xl px-3 py-2 text-xs font-black">${rounds} rondas</span>
+            </div>
+          </div>
+
+          <div class="mt-5 canvas-wrap">
+            <canvas id="resultsCanvas" aria-label="Mapa canvas de partidas y resultados"></canvas>
+          </div>
+
+          <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p class="text-sm font-bold text-slate-600">Verde: partida terminada. Dorado: tablas o mesa libre. Gris: pendiente.</p>
+            <button id="downloadCanvas" class="rounded-xl bg-slate-950 px-4 py-3 text-sm font-black text-white">Descargar PNG</button>
+          </div>
+        </section>
+      `;
+
+      document.querySelector("#downloadCanvas")?.addEventListener("click", downloadResultsCanvas);
+    }
+
+    function drawResultsCanvas() {
+      const canvas = document.querySelector("#resultsCanvas");
+      if (!canvas) return;
+
+      const wrapper = canvas.parentElement;
+      const matches = sortedMatches();
+      const width = Math.max(820, Math.floor(wrapper?.clientWidth || 820));
+      const rowHeight = 86;
+      const headerHeight = 132;
+      const height = Math.max(360, headerHeight + Math.max(matches.length, 1) * rowHeight + 40);
+      const dpr = window.devicePixelRatio || 1;
+
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      canvas.style.height = `${height}px`;
+
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, width, height);
+
+      drawCanvasBackground(ctx, width, height);
+
+      ctx.fillStyle = "#fffdf4";
+      ctx.font = "900 26px Inter, system-ui, sans-serif";
+      ctx.fillText("UPTP Chess Club", 34, 48);
+      ctx.font = "700 13px Inter, system-ui, sans-serif";
+      ctx.fillStyle = "rgba(255,253,244,0.72)";
+      ctx.fillText(`${settings.tournamentName} · Mapa de resultados`, 36, 72);
+
+      drawLegend(ctx, width - 330, 32);
+
+      if (!matches.length) {
+        ctx.fillStyle = "rgba(255,253,244,0.78)";
+        ctx.font = "800 18px Inter, system-ui, sans-serif";
+        ctx.fillText("Todavía no hay partidas registradas.", 36, headerHeight + 32);
+        return;
+      }
+
+      matches.forEach((match, index) => {
+        drawCanvasMatchRow(ctx, match, index, 28, headerHeight + index * rowHeight, width - 56, rowHeight - 12);
+      });
+    }
+
+    function drawCanvasBackground(ctx, width, height) {
+      ctx.fillStyle = "#262421";
+      ctx.fillRect(0, 0, width, height);
+
+      const square = 40;
+      for (let y = 0; y < height; y += square) {
+        for (let x = 0; x < width; x += square) {
+          ctx.fillStyle = ((x / square + y / square) % 2 === 0)
+            ? "rgba(238,238,210,0.06)"
+            : "rgba(118,150,86,0.18)";
+          ctx.fillRect(x, y, square, square);
+        }
+      }
+
+      const gradient = ctx.createLinearGradient(0, 0, width, height);
+      gradient.addColorStop(0, "rgba(129,182,76,0.20)");
+      gradient.addColorStop(0.5, "rgba(38,36,33,0.52)");
+      gradient.addColorStop(1, "rgba(201,162,74,0.16)");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    function drawLegend(ctx, x, y) {
+      const items = [
+        ["#81b64c", "Terminada"],
+        ["#c9a24a", "Tablas / libre"],
+        ["#8a8580", "Pendiente"]
+      ];
+
+      items.forEach((item, index) => {
+        const itemX = x + index * 108;
+        ctx.fillStyle = item[0];
+        roundRect(ctx, itemX, y, 14, 14, 4);
+        ctx.fill();
+        ctx.fillStyle = "rgba(255,253,244,0.78)";
+        ctx.font = "800 11px Inter, system-ui, sans-serif";
+        ctx.fillText(item[1], itemX + 20, y + 12);
+      });
+    }
+
+    function drawCanvasMatchRow(ctx, match, index, x, y, width, height) {
+      const isPending = !match.result;
+      const isDrawLike = match.result === "0.5-0.5" || match.result === "bye";
+      const accent = isPending ? "#8a8580" : (isDrawLike ? "#c9a24a" : "#81b64c");
+      const darkSquare = index % 2 === 0 ? "#769656" : "#5d8740";
+      const lightSquare = index % 2 === 0 ? "#eeeed2" : "#f7f3df";
+
+      ctx.fillStyle = index % 2 === 0 ? "rgba(255,253,244,0.96)" : "rgba(238,238,210,0.94)";
+      roundRect(ctx, x, y, width, height, 16);
+      ctx.fill();
+
+      ctx.fillStyle = darkSquare;
+      roundRect(ctx, x, y, 84, height, 16);
+      ctx.fill();
+
+      ctx.fillStyle = "rgba(38,36,33,0.16)";
+      ctx.fillRect(x + 70, y, 14, height);
+
+      ctx.fillStyle = "#fffdf4";
+      ctx.font = "900 18px Inter, system-ui, sans-serif";
+      ctx.fillText(`R${match.round}`, x + 18, y + 31);
+      ctx.font = "800 11px Inter, system-ui, sans-serif";
+      ctx.fillText(match.result === "bye" ? "LIBRE" : `T${match.batch} M${match.board}`, x + 18, y + 54);
+
+      if (match.byeId) {
+        drawByeRow(ctx, match, x + 104, y + 14, width - 128, height - 28, accent);
+        return;
+      }
+
+      const whiteWon = match.result === "1-0";
+      const blackWon = match.result === "0-1";
+      const leftX = x + 104;
+      const pillWidth = 90;
+      const gap = 18;
+      const rightMargin = 18;
+      const playerWidth = Math.max(190, (width - 104 - rightMargin - pillWidth - gap * 2) / 2);
+      const pillX = leftX + playerWidth + gap;
+      const rightX = pillX + pillWidth + gap;
+
+      drawCanvasPlayer(ctx, "Blancas", playerName(match.whiteId), leftX, y + 13, playerWidth, height - 26, lightSquare, "#262421", whiteWon);
+      drawResultPill(ctx, resultLabel(match), pillX, y + 22, pillWidth, 34, accent, isPending);
+      drawCanvasPlayer(ctx, "Negras", playerName(match.blackId), rightX, y + 13, playerWidth, height - 26, "#312e2b", "#fffdf4", blackWon);
+    }
+
+    function drawCanvasPlayer(ctx, label, name, x, y, width, height, fill, color, winner) {
+      ctx.fillStyle = fill;
+      roundRect(ctx, x, y, width, height, 12);
+      ctx.fill();
+
+      ctx.strokeStyle = winner ? "#81b64c" : "rgba(38,36,33,0.14)";
+      ctx.lineWidth = winner ? 3 : 1;
+      roundRect(ctx, x + 0.5, y + 0.5, width - 1, height - 1, 12);
+      ctx.stroke();
+
+      ctx.fillStyle = color === "#fffdf4" ? "rgba(255,253,244,0.66)" : "rgba(38,36,33,0.56)";
+      ctx.font = "900 10px Inter, system-ui, sans-serif";
+      ctx.fillText(label.toUpperCase(), x + 14, y + 18);
+
+      ctx.fillStyle = color;
+      ctx.font = "900 15px Inter, system-ui, sans-serif";
+      drawWrappedCanvasText(ctx, name, x + 14, y + 40, width - 28, 17, 2);
+
+      if (winner) {
+        ctx.fillStyle = "#81b64c";
+        ctx.font = "900 12px Inter, system-ui, sans-serif";
+        ctx.fillText("+1", x + width - 35, y + 20);
+      }
+    }
+
+    function drawByeRow(ctx, match, x, y, width, height, accent) {
+      ctx.fillStyle = "#fff8df";
+      roundRect(ctx, x, y, width, height, 12);
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(201,162,74,0.42)";
+      ctx.lineWidth = 2;
+      roundRect(ctx, x + 1, y + 1, width - 2, height - 2, 12);
+      ctx.stroke();
+
+      ctx.fillStyle = "#4d4526";
+      ctx.font = "900 13px Inter, system-ui, sans-serif";
+      ctx.fillText("MESA LIBRE", x + 18, y + 24);
+      ctx.font = "900 20px Inter, system-ui, sans-serif";
+      ctx.fillText(playerName(match.byeId), x + 18, y + 52);
+
+      drawResultPill(ctx, "+1", x + width - 76, y + 18, 52, 34, accent, false);
+    }
+
+    function drawResultPill(ctx, label, x, y, width, height, fill, pending) {
+      ctx.fillStyle = pending ? "#8a8580" : fill;
+      roundRect(ctx, x, y, width, height, 18);
+      ctx.fill();
+      ctx.fillStyle = "#fffdf4";
+      ctx.font = "900 14px Inter, system-ui, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(label, x + width / 2, y + 22);
+      ctx.textAlign = "left";
+    }
+
+    function resultLabel(match) {
+      if (match.result === "0.5-0.5") return "1/2";
+      if (match.result === "bye") return "+1";
+      return match.result || "-";
+    }
+
+    function drawWrappedCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+      const words = String(text).split(/\s+/);
+      const lines = [];
+      let line = "";
+
+      words.forEach(word => {
+        const test = line ? `${line} ${word}` : word;
+        if (ctx.measureText(test).width <= maxWidth || !line) {
+          line = test;
+        } else {
+          lines.push(line);
+          line = word;
+        }
+      });
+      if (line) lines.push(line);
+
+      lines.slice(0, maxLines).forEach((item, index) => {
+        const suffix = index === maxLines - 1 && lines.length > maxLines ? "..." : "";
+        ctx.fillText(`${item}${suffix}`, x, y + index * lineHeight);
+      });
+    }
+
+    function roundRect(ctx, x, y, width, height, radius) {
+      const r = Math.min(radius, width / 2, height / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + width, y, x + width, y + height, r);
+      ctx.arcTo(x + width, y + height, x, y + height, r);
+      ctx.arcTo(x, y + height, x, y, r);
+      ctx.arcTo(x, y, x + width, y, r);
+      ctx.closePath();
+    }
+
+    function downloadResultsCanvas() {
+      drawResultsCanvas();
+      const canvas = document.querySelector("#resultsCanvas");
+      if (!canvas) return;
+
+      const link = document.createElement("a");
+      link.download = "uptp-chess-mapa-resultados.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+
     function renderPairings() {
       const pending = pendingMatches();
       const grouped = groupedByBatch(pending);
@@ -1893,11 +2256,13 @@
       renderSummary();
       renderDashboard();
       renderPairings();
+      renderMap();
       renderStandings();
       renderHistory();
       renderPlayers();
       renderDatabase();
       renderTabs();
+      requestAnimationFrame(drawResultsCanvas);
     }
 
     function openAdminModal() {
@@ -2029,6 +2394,9 @@
     document.querySelector("#adminForm").addEventListener("submit", handleAdminForm);
     document.querySelector("#adminLockButton").addEventListener("click", lockAdmin);
     document.querySelector("#printButton").addEventListener("click", () => window.print());
+    window.addEventListener("resize", () => {
+      if (currentView === "map") drawResultsCanvas();
+    });
 
     async function init() {
       await loadData();
