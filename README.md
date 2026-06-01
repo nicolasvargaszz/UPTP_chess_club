@@ -225,18 +225,19 @@ Con Quick Tunnel, si la URL cambia, se puede actualizar `api-config.json`, hacer
 
 ## Aplicar datos oficiales desde el Droplet
 
-Para aplicar los cambios del 2026-05-26 directamente sobre SQLite:
+Para aplicar el estado oficial del 2026-06-01 directamente sobre SQLite:
 
 ```bash
 cd ~/UPTP_chess_club
 git pull
 cd server
-node scripts/apply-2026-05-26-updates.js
+node scripts/apply-2026-06-01-updates.js
+systemctl restart uptp-chess-api
 ```
 
-Ese script deja como estado oficial las rondas 1 y 2, borra partidas `Auto`/`Adelanto` incorrectas y registra:
+Ese script deja como estado oficial:
 
 - Ronda 1 con mesa libre de `Maximiliano Ferloni` por 1 punto.
 - Ronda 2 con mesa libre de `David Nicolás Bareiro Pereira` por 1 punto.
-- Las partidas pendientes oficiales de ronda 1 y ronda 2.
-- Los resultados ya jugados, incluyendo `Camila Rivas vs Saúl Rojas` y `Fabrizio Matias Castro Gamarra vs José Alejandro Costa Garrigoza`.
+- Ronda 3 con resultados cargados, dos partidas pendientes y mesa libre de `Sara Ltaif Fischer`.
+- Ronda 4 generada como próxima fecha, con mesa libre de `Santiago Gamarra`.

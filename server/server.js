@@ -58,203 +58,73 @@ const OFFICIAL_PLAYERS = [
   "Josue Hartman"
 ];
 
+function officialMatch(id, round, batch, board, whiteId, blackId, result = "", source = "official") {
+  return {
+    id,
+    round,
+    batch,
+    board,
+    whiteId,
+    blackId,
+    result,
+    createdAt: `2026-06-01T${String(round).padStart(2, "0")}:${String(batch).padStart(2, "0")}:${String(board).padStart(2, "0")}.000Z`,
+    source
+  };
+}
+
+function officialBye(id, round, batch, board, byeId) {
+  return {
+    id,
+    round,
+    batch,
+    board,
+    byeId,
+    result: "bye",
+    createdAt: `2026-06-01T${String(round).padStart(2, "0")}:${String(batch).padStart(2, "0")}:${String(board).padStart(2, "0")}.000Z`,
+    source: "bye"
+  };
+}
+
 const INITIAL_MATCHES = [
-  {
-    id: "m-inicial-1",
-    round: 1,
-    batch: 1,
-    board: 1,
-    whiteId: "p8",
-    blackId: "p14",
-    result: "0-1",
-    createdAt: "2026-05-25T00:00:01.000Z",
-    source: "initial"
-  },
-  {
-    id: "m-inicial-2",
-    round: 1,
-    batch: 1,
-    board: 2,
-    whiteId: "p2",
-    blackId: "p11",
-    result: "1-0",
-    createdAt: "2026-05-25T00:00:02.000Z",
-    source: "initial"
-  },
-  {
-    id: "m-inicial-3",
-    round: 1,
-    batch: 1,
-    board: 3,
-    whiteId: "p3",
-    blackId: "p16",
-    result: "0-1",
-    createdAt: "2026-05-25T00:00:03.000Z",
-    source: "initial"
-  },
-  {
-    id: "m-oficial-4-camila-ian",
-    round: 1,
-    batch: 2,
-    board: 1,
-    whiteId: "p1",
-    blackId: "p15",
-    result: "0.5-0.5",
-    createdAt: "2026-05-25T00:00:04.000Z",
-    source: "official"
-  },
-  {
-    id: "m-oficial-5-bruno-bareiro",
-    round: 1,
-    batch: 2,
-    board: 2,
-    whiteId: "p4",
-    blackId: "p5",
-    result: "1-0",
-    createdAt: "2026-05-25T00:00:05.000Z",
-    source: "official"
-  },
-  {
-    id: "m-oficial-6-oscar-diego",
-    round: 1,
-    batch: 2,
-    board: 3,
-    whiteId: "p9",
-    blackId: "p13",
-    result: "0-1",
-    createdAt: "2026-05-26T00:00:01.000Z",
-    source: "official"
-  },
-  {
-    id: "m-oficial-7-sara-fabrizio",
-    round: 1,
-    batch: 3,
-    board: 1,
-    whiteId: "p12",
-    blackId: "p6",
-    result: "",
-    createdAt: "2026-05-26T00:00:02.000Z",
-    source: "official"
-  },
-  {
-    id: "m-oficial-8-matias-josue",
-    round: 1,
-    batch: 3,
-    board: 2,
-    whiteId: "p10",
-    blackId: "p17",
-    result: "",
-    createdAt: "2026-05-26T00:00:03.000Z",
-    source: "official"
-  },
-  {
-    id: "bye-r1-maximiliano",
-    round: 1,
-    batch: 3,
-    board: 3,
-    byeId: "p7",
-    result: "bye",
-    createdAt: "2026-05-26T00:00:04.000Z",
-    source: "bye"
-  },
-  {
-    id: "m-oficial-9-oscar-nicolas",
-    round: 2,
-    batch: 1,
-    board: 1,
-    whiteId: "p9",
-    blackId: "p8",
-    result: "1-0",
-    createdAt: "2026-05-26T00:00:05.000Z",
-    source: "official"
-  },
-  {
-    id: "m-oficial-10-camila-saul",
-    round: 2,
-    batch: 1,
-    board: 2,
-    whiteId: "p1",
-    blackId: "p14",
-    result: "0-1",
-    createdAt: "2026-05-26T00:00:06.000Z",
-    source: "official"
-  },
-  {
-    id: "m-oficial-11-fabrizio-jose",
-    round: 2,
-    batch: 1,
-    board: 3,
-    whiteId: "p6",
-    blackId: "p2",
-    result: "0-1",
-    createdAt: "2026-05-26T00:00:07.000Z",
-    source: "official"
-  },
-  {
-    id: "m-oficial-12-nico-bruno",
-    round: 2,
-    batch: 2,
-    board: 1,
-    whiteId: "p16",
-    blackId: "p4",
-    result: "",
-    createdAt: "2026-05-26T00:00:08.000Z",
-    source: "official"
-  },
-  {
-    id: "m-oficial-13-diego-ian",
-    round: 2,
-    batch: 2,
-    board: 2,
-    whiteId: "p13",
-    blackId: "p15",
-    result: "",
-    createdAt: "2026-05-26T00:00:09.000Z",
-    source: "official"
-  },
-  {
-    id: "m-oficial-14-santiago-josue",
-    round: 2,
-    batch: 2,
-    board: 3,
-    whiteId: "p3",
-    blackId: "p17",
-    result: "",
-    createdAt: "2026-05-26T00:00:10.000Z",
-    source: "official"
-  },
-  {
-    id: "m-oficial-15-sara-matias",
-    round: 2,
-    batch: 3,
-    board: 1,
-    whiteId: "p12",
-    blackId: "p10",
-    result: "",
-    createdAt: "2026-05-26T00:00:11.000Z",
-    source: "official"
-  },
-  {
-    id: "m-oficial-16-maximiliano-yanina",
-    round: 2,
-    batch: 3,
-    board: 2,
-    whiteId: "p7",
-    blackId: "p11",
-    result: "",
-    createdAt: "2026-05-26T00:00:12.000Z",
-    source: "official"
-  },
-  {
-    id: "bye-r2-bareiro",
-    round: 2,
-    batch: 3,
-    board: 3,
-    byeId: "p5",
-    result: "bye",
-    createdAt: "2026-05-26T00:00:13.000Z",
-    source: "bye"
-  }
+  officialMatch("m-r1-1-nicolas-saul", 1, 1, 1, "p8", "p14", "0-1", "initial"),
+  officialMatch("m-r1-2-jose-yanina", 1, 1, 2, "p2", "p11", "1-0", "initial"),
+  officialMatch("m-r1-3-santiago-nico", 1, 1, 3, "p3", "p16", "0-1", "initial"),
+  officialMatch("m-r1-4-camila-ian", 1, 2, 1, "p1", "p15", "0.5-0.5"),
+  officialMatch("m-r1-5-bruno-bareiro", 1, 2, 2, "p4", "p5", "1-0"),
+  officialMatch("m-r1-6-oscar-diego", 1, 2, 3, "p9", "p13", "0-1"),
+  officialMatch("m-r1-7-sara-fabrizio", 1, 3, 1, "p12", "p6", "0-1"),
+  officialMatch("m-r1-8-matias-josue", 1, 3, 2, "p10", "p17", "0-1"),
+  officialBye("bye-r1-maximiliano", 1, 3, 3, "p7"),
+
+  officialMatch("m-r2-1-oscar-nicolas", 2, 1, 1, "p9", "p8", "1-0"),
+  officialMatch("m-r2-2-camila-saul", 2, 1, 2, "p1", "p14", "0-1"),
+  officialMatch("m-r2-3-fabrizio-jose", 2, 1, 3, "p6", "p2", "0-1"),
+  officialMatch("m-r2-4-nico-bruno", 2, 2, 1, "p16", "p4", "1-0"),
+  officialMatch("m-r2-5-diego-ian", 2, 2, 2, "p13", "p15", "0-1"),
+  officialMatch("m-r2-6-santiago-josue", 2, 2, 3, "p3", "p17", "0-1"),
+  officialMatch("m-r2-7-sara-matias", 2, 3, 1, "p12", "p10", "0-1"),
+  officialMatch("m-r2-8-maximiliano-yanina", 2, 3, 2, "p7", "p11", "0-1"),
+  officialBye("bye-r2-bareiro", 2, 3, 3, "p5"),
+
+  officialMatch("m-r3-1-nicolas-santiago", 3, 1, 1, "p8", "p3"),
+  officialMatch("m-r3-2-yanina-fabrizio", 3, 1, 2, "p11", "p6", "1-0"),
+  officialMatch("m-r3-3-bareiro-oscar", 3, 1, 3, "p5", "p9", "0-1"),
+  officialMatch("m-r3-4-bruno-camila", 3, 2, 1, "p4", "p1", "0-1"),
+  officialMatch("m-r3-5-saul-nico", 3, 2, 2, "p14", "p16", "0-1"),
+  officialMatch("m-r3-6-jose-maximiliano", 3, 2, 3, "p2", "p7", "1-0"),
+  officialMatch("m-r3-7-diego-josue", 3, 3, 1, "p13", "p17"),
+  officialMatch("m-r3-8-matias-ian", 3, 3, 2, "p10", "p15", "0-1"),
+  officialBye("bye-r3-sara", 3, 3, 3, "p12"),
+
+  officialMatch("m-r4-1-jose-nico", 4, 1, 1, "p2", "p16"),
+  officialMatch("m-r4-2-ian-oscar", 4, 1, 2, "p15", "p9"),
+  officialMatch("m-r4-3-saul-josue", 4, 1, 3, "p14", "p17"),
+  officialMatch("m-r4-4-yanina-camila", 4, 2, 1, "p11", "p1"),
+  officialMatch("m-r4-5-bruno-bareiro", 4, 2, 2, "p4", "p5"),
+  officialMatch("m-r4-6-diego-fabrizio", 4, 2, 3, "p13", "p6"),
+  officialMatch("m-r4-7-matias-maximiliano", 4, 3, 1, "p10", "p7"),
+  officialMatch("m-r4-8-sara-nicolas", 4, 3, 2, "p12", "p8"),
+  officialBye("bye-r4-santiago", 4, 3, 3, "p3")
 ];
 
 const DEFAULT_SETTINGS = {
@@ -275,7 +145,7 @@ function createInitialState() {
       active: true
     })),
     matches: INITIAL_MATCHES,
-    appliedPatches: ["server-seed-2026-05-25"],
+    appliedPatches: ["server-seed-2026-06-01-rounds-1-4"],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };

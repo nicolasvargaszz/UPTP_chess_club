@@ -82,7 +82,7 @@ if command -v ufw >/dev/null 2>&1 && ufw status | grep -q "Status: active"; then
 fi
 
 echo "== Applying official tournament state =="
-node "$SERVER_DIR/scripts/apply-2026-05-26-updates.js"
+node "$SERVER_DIR/scripts/apply-2026-06-01-updates.js"
 systemctl restart "$SERVICE_NAME"
 
 echo "== Health check =="
