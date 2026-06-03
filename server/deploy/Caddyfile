@@ -1,4 +1,14 @@
-http://24.199.127.101, https://24.199.127.101 {
+http://24.199.127.101 {
+  redir https://24.199.127.101{uri} permanent
+}
+
+https://24.199.127.101 {
+  tls {
+    issuer acme {
+      profile shortlived
+    }
+  }
+
   root * /var/www/uptp_chess_club
   encode gzip
 

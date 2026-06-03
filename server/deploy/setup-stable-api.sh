@@ -33,6 +33,10 @@ if ! command -v caddy >/dev/null 2>&1; then
   curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' > /etc/apt/sources.list.d/caddy-stable.list
   apt update
   apt install -y caddy
+else
+  echo "== Updating Caddy if needed =="
+  apt update
+  apt install -y caddy
 fi
 
 cd "$SERVER_DIR"
@@ -89,6 +93,7 @@ echo "== Health check =="
 sleep 3
 curl -fsS "http://127.0.0.1:3000/api/health"
 echo
+sleep 8
 curl -fsS "$API_URL/api/health"
 echo
 echo
