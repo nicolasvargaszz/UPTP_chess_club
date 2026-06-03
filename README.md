@@ -20,7 +20,7 @@ La página ya lee `api-config.json`, así que no hace falta pegar la URL del ser
 También podés usar la app directamente desde el Droplet:
 
 ```txt
-https://chess.24-199-127-101.qip.sh
+https://24.199.127.101.sslip.io
 ```
 
 Esa URL usa la misma base SQLite y evita problemas de conexión entre GitHub Pages y la API.
@@ -134,10 +134,10 @@ Nota: con Quick Tunnel la URL `trycloudflare.com` puede cambiar si reiniciás el
 Para no depender de Cloudflare Quick Tunnel, este repo queda configurado para usar:
 
 ```txt
-https://chess.24-199-127-101.qip.sh
+https://24.199.127.101.sslip.io
 ```
 
-GitHub Pages necesita una API HTTPS. `qip.sh` es un DNS gratuito tipo wildcard que resuelve el hostname hacia la IP `24.199.127.101`, y Caddy puede pedir un certificado HTTPS normal para ese hostname.
+GitHub Pages necesita una API HTTPS. `sslip.io` es un DNS gratuito que resuelve hostnames con IP embebida hacia esa IP, por ejemplo `24.199.127.101.sslip.io` hacia `24.199.127.101`, y Caddy puede pedir un certificado HTTPS normal para ese hostname.
 
 Atajo recomendado en el Droplet:
 
@@ -199,7 +199,7 @@ Verificá:
 ```bash
 systemctl status uptp-chess-api --no-pager
 systemctl status caddy --no-pager
-curl https://chess.24-199-127-101.qip.sh/api/health
+curl https://24.199.127.101.sslip.io/api/health
 ```
 
 Si eso responde `{"ok":true,...}`, todos los visitantes de GitHub Pages leen la base remota automáticamente porque `api-config.json` apunta a esa URL.
@@ -210,7 +210,7 @@ El archivo `api-config.json` puede guardar una URL pública de API:
 
 ```json
 {
-  "apiUrl": "https://chess.24-199-127-101.qip.sh"
+  "apiUrl": "https://24.199.127.101.sslip.io"
 }
 ```
 

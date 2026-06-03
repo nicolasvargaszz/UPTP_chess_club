@@ -12,7 +12,7 @@ http://24.199.127.101 {
   }
 }
 
-chess.24-199-127-101.qip.sh {
+24.199.127.101.sslip.io {
   root * /var/www/uptp_chess_club
   encode gzip
 
