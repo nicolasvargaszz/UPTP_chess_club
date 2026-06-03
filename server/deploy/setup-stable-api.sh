@@ -4,7 +4,7 @@ set -euo pipefail
 APP_DIR="/root/UPTP_chess_club"
 SERVER_DIR="$APP_DIR/server"
 WEB_DIR="/var/www/uptp_chess_club"
-API_HOST="24.199.127.101"
+API_HOST="chess.24-199-127-101.traefik.me"
 API_URL="https://$API_HOST"
 SERVICE_NAME="uptp-chess-api"
 

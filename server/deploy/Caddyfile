@@ -1,14 +1,18 @@
 http://24.199.127.101 {
-  redir https://24.199.127.101{uri} permanent
-}
+  root * /var/www/uptp_chess_club
+  encode gzip
 
-https://24.199.127.101 {
-  tls {
-    issuer acme {
-      profile shortlived
-    }
+  handle /api/* {
+    reverse_proxy 127.0.0.1:3000
   }
 
+  handle {
+    try_files {path} /index.html
+    file_server
+  }
+}
+
+chess.24-199-127-101.traefik.me {
   root * /var/www/uptp_chess_club
   encode gzip
 
