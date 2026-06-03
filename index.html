@@ -415,11 +415,19 @@
       return String(value || "").trim().replace(/\/+$/, "");
     }
 
+    function uniqueApiUrls(values) {
+      return [...new Set(values.flat().map(normalizeApiUrl).filter(Boolean))];
+    }
+
     function sameOriginApiUrl() {
       const apiHosts = [
         "24.199.127.101",
         "24.199.127.101.sslip.io",
-        "24.199.127.101.nip.io"
+        "24-199-127-101.sslip.io",
+        "chess.24-199-127-101.sslip.io",
+        "24.199.127.101.nip.io",
+        "24-199-127-101.nip.io",
+        "chess.24-199-127-101.nip.io"
       ];
 
       return apiHosts.includes(window.location.hostname) ? window.location.origin : "";
@@ -468,6 +476,22 @@
         remoteConnected = false;
         return false;
       }
+    }
+
+    async function connectFirstRemoteApi(apiUrls) {
+      const candidates = uniqueApiUrls(apiUrls);
+
+      for (const apiUrl of candidates) {
+        remoteApiUrl = apiUrl;
+        if (await loadRemoteData()) {
+          localStorage.setItem(REMOTE_API_STORAGE_KEY, remoteApiUrl);
+          return true;
+        }
+      }
+
+      remoteApiUrl = candidates[0] || "";
+      remoteConnected = false;
+      return false;
     }
 
     async function saveRemoteSnapshot() {
@@ -579,15 +603,11 @@
       database = await openDatabase();
       dbAvailable = Boolean(database);
       const originApiUrl = sameOriginApiUrl();
-      const publicApiUrl = await loadPublicApiUrl();
+      const publicApiUrls = await loadPublicApiUrls();
       const savedApiUrl = normalizeApiUrl(localStorage.getItem(REMOTE_API_STORAGE_KEY));
-      remoteApiUrl = originApiUrl || publicApiUrl || savedApiUrl;
+      const apiCandidates = uniqueApiUrls([originApiUrl, ...publicApiUrls, savedApiUrl]);
 
-      if (remoteApiUrl && savedApiUrl !== remoteApiUrl) {
-        localStorage.setItem(REMOTE_API_STORAGE_KEY, remoteApiUrl);
-      }
-
-      if (await loadRemoteData()) {
+      if (await connectFirstRemoteApi(apiCandidates)) {
         if (!remoteToken) {
           adminUnlocked = false;
           sessionStorage.removeItem("uptpAdminUnlocked");
@@ -621,14 +641,14 @@
       await saveSettings();
     }
 
-    async function loadPublicApiUrl() {
+    async function loadPublicApiUrls() {
       try {
         const response = await fetch("api-config.json", { cache: "no-store" });
-        if (!response.ok) return "";
+        if (!response.ok) return [];
         const config = await response.json();
-        return normalizeApiUrl(config.apiUrl);
+        return uniqueApiUrls([config.apiUrl, config.apiUrls || [], config.apiFallbackUrls || []]);
       } catch {
-        return "";
+        return [];
       }
     }
 
@@ -2210,16 +2230,16 @@
     async function handleAdminForm(event) {
       event.preventDefault();
       const formData = new FormData(event.currentTarget);
-      const requestedApiUrl = normalizeApiUrl(formData.get("apiUrl")) || remoteApiUrl || await loadPublicApiUrl();
+      const publicApiUrls = await loadPublicApiUrls();
+      const requestedApiUrl = normalizeApiUrl(formData.get("apiUrl"));
+      const apiCandidates = uniqueApiUrls([requestedApiUrl, remoteApiUrl, ...publicApiUrls]);
       const key = String(formData.get("key") || "").trim();
       if (key.length < 4) return showToast("La clave debe tener al menos 4 caracteres.");
 
-      if (requestedApiUrl) {
-        remoteApiUrl = requestedApiUrl;
-        localStorage.setItem(REMOTE_API_STORAGE_KEY, remoteApiUrl);
-
+      if (apiCandidates.length) {
         try {
-          await loadRemoteData();
+          const connected = await connectFirstRemoteApi(apiCandidates);
+          if (!connected) throw new Error("remote_unreachable");
           const login = await apiRequest("/api/login", {
             method: "POST",
             body: JSON.stringify({ key })

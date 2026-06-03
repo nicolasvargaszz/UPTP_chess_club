@@ -137,7 +137,7 @@ Para no depender de Cloudflare Quick Tunnel, este repo queda configurado para us
 https://24.199.127.101.sslip.io
 ```
 
-GitHub Pages necesita una API HTTPS. `sslip.io` es un DNS gratuito que resuelve hostnames con IP embebida hacia esa IP, por ejemplo `24.199.127.101.sslip.io` hacia `24.199.127.101`, y Caddy puede pedir un certificado HTTPS normal para ese hostname.
+GitHub Pages necesita una API HTTPS. `sslip.io` es un DNS gratuito que resuelve hostnames con IP embebida hacia esa IP, por ejemplo `24.199.127.101.sslip.io` hacia `24.199.127.101`, y Caddy puede pedir un certificado HTTPS normal para ese hostname. La app también prueba variantes `sslip.io` y `nip.io` como respaldo si el DNS del navegador falla con una de ellas.
 
 Atajo recomendado en el Droplet:
 

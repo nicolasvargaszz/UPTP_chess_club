@@ -12,7 +12,7 @@ http://24.199.127.101 {
   }
 }
 
-24.199.127.101.sslip.io {
+24.199.127.101.sslip.io, 24-199-127-101.sslip.io, chess.24-199-127-101.sslip.io, 24.199.127.101.nip.io, 24-199-127-101.nip.io, chess.24-199-127-101.nip.io {
   root * /var/www/uptp_chess_club
   encode gzip
 

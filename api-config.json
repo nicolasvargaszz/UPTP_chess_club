@@ -1,3 +1,11 @@
 {
-  "apiUrl": "https://24.199.127.101.sslip.io"
+  "apiUrl": "https://24.199.127.101.sslip.io",
+  "apiUrls": [
+    "https://24.199.127.101.sslip.io",
+    "https://24-199-127-101.sslip.io",
+    "https://chess.24-199-127-101.sslip.io",
+    "https://24.199.127.101.nip.io",
+    "https://24-199-127-101.nip.io",
+    "https://chess.24-199-127-101.nip.io"
+  ]
 }
