@@ -17,13 +17,14 @@ App web estática para administrar un torneo suizo presencial de ajedrez del UPT
 
 La página ya lee `api-config.json`, así que no hace falta pegar la URL del servidor a mano cuando la API estable del Droplet está activa.
 
-Si el DNS gratuito `sslip.io` falla durante el torneo, usá la app directamente desde el Droplet:
+También podés usar la app directamente desde el Droplet:
 
 ```txt
-http://24.199.127.101
+https://24.199.127.101
 ```
 
 Esa URL usa la misma base SQLite y evita problemas de conexión entre GitHub Pages y la API.
+GitHub Pages también usa esa URL HTTPS para leer la base remota, porque los navegadores bloquean llamadas desde una página HTTPS hacia una API HTTP.
 
 ## Cómo cargar resultados
 
@@ -133,10 +134,10 @@ Nota: con Quick Tunnel la URL `trycloudflare.com` puede cambiar si reiniciás el
 Para no depender de Cloudflare Quick Tunnel, este repo queda configurado para usar:
 
 ```txt
-https://24.199.127.101.sslip.io
+https://24.199.127.101
 ```
 
-`sslip.io` resuelve automáticamente ese host hacia la IP `24.199.127.101`, y Caddy puede pedir HTTPS gratis para esa URL.
+GitHub Pages necesita una API HTTPS. Caddy sirve la app y la API sobre la IP pública del Droplet, y Let’s Encrypt puede emitir certificados para direcciones IP.
 
 Atajo recomendado en el Droplet:
 
@@ -198,16 +199,10 @@ Verificá:
 ```bash
 systemctl status uptp-chess-api --no-pager
 systemctl status caddy --no-pager
-curl https://24.199.127.101.sslip.io/api/health
+curl https://24.199.127.101/api/health
 ```
 
 Si eso responde `{"ok":true,...}`, todos los visitantes de GitHub Pages leen la base remota automáticamente porque `api-config.json` apunta a esa URL.
-
-URL alternativa de respaldo con el mismo Droplet:
-
-```txt
-https://24.199.127.101.nip.io
-```
 
 ## Publicar la URL de API para todos
 
@@ -215,7 +210,7 @@ El archivo `api-config.json` puede guardar una URL pública de API:
 
 ```json
 {
-  "apiUrl": "https://tu-api.trycloudflare.com"
+  "apiUrl": "https://24.199.127.101"
 }
 ```
 

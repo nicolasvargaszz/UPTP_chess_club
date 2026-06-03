@@ -1,18 +1,4 @@
-http://24.199.127.101 {
-  root * /var/www/uptp_chess_club
-  encode gzip
-
-  handle /api/* {
-    reverse_proxy 127.0.0.1:3000
-  }
-
-  handle {
-    try_files {path} /index.html
-    file_server
-  }
-}
-
-24.199.127.101.sslip.io, 24.199.127.101.nip.io {
+http://24.199.127.101, https://24.199.127.101 {
   root * /var/www/uptp_chess_club
   encode gzip
 

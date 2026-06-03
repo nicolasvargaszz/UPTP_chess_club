@@ -32,4 +32,6 @@ cp "$APP_DIR/server/deploy/Caddyfile" /etc/caddy/Caddyfile
 caddy validate --config /etc/caddy/Caddyfile
 systemctl reload caddy || systemctl restart caddy
 
-echo "Web updated at http://24.199.127.101"
+curl -fsS https://24.199.127.101/api/health
+echo
+echo "Web updated at https://24.199.127.101"

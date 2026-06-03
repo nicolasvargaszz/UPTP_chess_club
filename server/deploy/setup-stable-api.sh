@@ -4,7 +4,7 @@ set -euo pipefail
 APP_DIR="/root/UPTP_chess_club"
 SERVER_DIR="$APP_DIR/server"
 WEB_DIR="/var/www/uptp_chess_club"
-API_HOST="24.199.127.101.sslip.io"
+API_HOST="24.199.127.101"
 API_URL="https://$API_HOST"
 SERVICE_NAME="uptp-chess-api"
 
@@ -88,6 +88,8 @@ systemctl restart "$SERVICE_NAME"
 echo "== Health check =="
 sleep 3
 curl -fsS "http://127.0.0.1:3000/api/health"
+echo
+curl -fsS "$API_URL/api/health"
 echo
 echo
 echo "Setup complete."
