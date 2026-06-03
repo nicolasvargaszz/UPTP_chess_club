@@ -388,6 +388,8 @@
     let remoteConnected = false;
     let remoteToken = sessionStorage.getItem("uptpRemoteToken") || "";
     let adminUnlocked = Boolean(remoteToken) || sessionStorage.getItem("uptpAdminUnlocked") === "true";
+    let lastRemoteStateUpdatedAt = "";
+    let autoSyncTimer = null;
 
     function createInitialState() {
       return {
@@ -459,6 +461,7 @@
         const snapshot = await apiRequest("/api/state");
         state = normalizeState(snapshot.state || createInitialState());
         settings = { ...DEFAULT_SETTINGS, ...(snapshot.settings || {}) };
+        lastRemoteStateUpdatedAt = state.updatedAt || "";
         remoteConnected = true;
         return true;
       } catch {
@@ -480,7 +483,42 @@
 
       state = normalizeState(snapshot.state || state);
       settings = { ...DEFAULT_SETTINGS, ...(snapshot.settings || settings) };
+      lastRemoteStateUpdatedAt = state.updatedAt || "";
       return true;
+    }
+
+    async function syncRemoteData(options = {}) {
+      if (!remoteApiUrl || !remoteConnected) return false;
+
+      try {
+        const snapshot = await apiRequest("/api/state");
+        const incomingState = normalizeState(snapshot.state || state);
+        const incomingSettings = { ...DEFAULT_SETTINGS, ...(snapshot.settings || settings) };
+        const incomingUpdatedAt = incomingState.updatedAt || "";
+        const changed = incomingUpdatedAt && incomingUpdatedAt !== lastRemoteStateUpdatedAt;
+
+        remoteConnected = true;
+        if (!changed) return false;
+
+        state = incomingState;
+        settings = incomingSettings;
+        lastRemoteStateUpdatedAt = incomingUpdatedAt;
+        render();
+        if (options.notify) showToast("Datos actualizados desde la API.");
+        return true;
+      } catch {
+        remoteConnected = false;
+        if (options.notify) showToast("No se pudo sincronizar con la API.");
+        render();
+        return false;
+      }
+    }
+
+    function startAutoSync() {
+      window.clearInterval(autoSyncTimer);
+      autoSyncTimer = window.setInterval(() => {
+        if (!adminUnlocked) syncRemoteData();
+      }, 12000);
     }
 
     function publicSettings() {
@@ -1119,7 +1157,7 @@
       await saveState();
       await maybeAutoGeneratePairings();
       render();
-      showToast("Resultado guardado.");
+      showToast(remoteConnected ? "Resultado guardado en la API." : "Resultado guardado solo en este navegador.");
     }
 
     async function updateMatch(matchId, updates) {
@@ -1129,6 +1167,7 @@
       Object.assign(match, updates);
       await saveState();
       render();
+      showToast(remoteConnected ? "Partida actualizada en la API." : "Partida actualizada solo en este navegador.");
     }
 
     async function deleteMatch(matchId) {
@@ -1140,7 +1179,7 @@
       state.matches = state.matches.filter(item => item.id !== matchId);
       await saveState();
       render();
-      showToast("Partida eliminada.");
+      showToast(remoteConnected ? "Partida eliminada en la API." : "Partida eliminada solo en este navegador.");
     }
 
     async function updatePlayer(playerId, updates) {
@@ -1167,7 +1206,7 @@
       await saveState();
       form.reset();
       render();
-      showToast("Jugador agregado.");
+      showToast(remoteConnected ? "Jugador agregado en la API." : "Jugador agregado solo en este navegador.");
     }
 
     async function addManualMatch(form) {
@@ -1191,7 +1230,7 @@
       await saveState();
       form.reset();
       render();
-      showToast("Partida cargada.");
+      showToast(remoteConnected ? "Partida cargada en la API." : "Partida cargada solo en este navegador.");
     }
 
     function groupedByBatch(matches) {
@@ -2240,6 +2279,7 @@
       sessionStorage.removeItem("uptpAdminUnlocked");
       closeAdminModal();
       render();
+      syncRemoteData();
       showToast("Administrador bloqueado.");
     }
 
@@ -2263,6 +2303,7 @@
       await loadData();
       await maybeAutoGeneratePairings();
       render();
+      startAutoSync();
     }
 
     init();
