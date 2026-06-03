@@ -6,6 +6,7 @@ SERVER_DIR="$APP_DIR/server"
 WEB_DIR="/var/www/uptp_chess_club"
 API_HOST="24.199.127.101.sslip.io"
 API_URL="https://$API_HOST"
+DROPLET_IP="24.199.127.101"
 SERVICE_NAME="uptp-chess-api"
 
 echo "== UPTP Chess Club stable API setup =="
@@ -94,7 +95,7 @@ sleep 3
 curl -fsS "http://127.0.0.1:3000/api/health"
 echo
 sleep 8
-curl -fsS "$API_URL/api/health"
+curl --resolve "$API_HOST:443:$DROPLET_IP" -fsS "$API_URL/api/health"
 echo
 echo
 echo "Setup complete."

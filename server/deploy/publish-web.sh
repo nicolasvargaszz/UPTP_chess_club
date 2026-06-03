@@ -3,6 +3,8 @@ set -euo pipefail
 
 APP_DIR="/root/UPTP_chess_club"
 WEB_DIR="/var/www/uptp_chess_club"
+API_HOST="24.199.127.101.sslip.io"
+DROPLET_IP="24.199.127.101"
 
 echo "== Publishing UPTP Chess Club web files =="
 
@@ -33,6 +35,6 @@ caddy validate --config /etc/caddy/Caddyfile
 systemctl reload caddy || systemctl restart caddy
 
 sleep 8
-curl -fsS https://24.199.127.101.sslip.io/api/health
+curl --resolve "$API_HOST:443:$DROPLET_IP" -fsS "https://$API_HOST/api/health"
 echo
-echo "Web updated at https://24.199.127.101.sslip.io"
+echo "Web updated at https://$API_HOST"
