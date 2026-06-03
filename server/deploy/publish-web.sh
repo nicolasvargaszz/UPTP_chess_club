@@ -33,6 +33,6 @@ caddy validate --config /etc/caddy/Caddyfile
 systemctl reload caddy || systemctl restart caddy
 
 sleep 8
-curl -fsS https://chess.24-199-127-101.traefik.me/api/health
+curl -fsS https://chess.24-199-127-101.qip.sh/api/health
 echo
-echo "Web updated at https://chess.24-199-127-101.traefik.me"
+echo "Web updated at https://chess.24-199-127-101.qip.sh"

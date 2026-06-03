@@ -12,7 +12,7 @@ http://24.199.127.101 {
   }
 }
 
-chess.24-199-127-101.traefik.me {
+chess.24-199-127-101.qip.sh {
   root * /var/www/uptp_chess_club
   encode gzip
 
